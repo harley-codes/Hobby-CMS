@@ -1,3 +1,54 @@
 {
-  "extends": "next/core-web-vitals"
+	"extends": [
+		"next/core-web-vitals"
+	],
+	"rules": {
+		"no-restricted-imports": [
+			"error",
+			{
+				"patterns": [
+					"@mui/*/*/*"
+				]
+			}
+		],
+		"array-bracket-newline": [
+			"error",
+			"consistent"
+		],
+		"indent": [
+			"error",
+			"tab",
+			{
+				"ArrayExpression": 1,
+				"SwitchCase": 1
+			}
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"unicode-bom": [
+			"error",
+			"never"
+		],
+		"quotes": [
+			"error",
+			"single"
+		],
+		"array-bracket-spacing": [
+			"error",
+			"never"
+		],
+		"brace-style": [
+			"error",
+			"allman",
+			{
+				"allowSingleLine": true
+			}
+		],
+		"semi": [
+			"error",
+			"never"
+		]
+	}
 }
