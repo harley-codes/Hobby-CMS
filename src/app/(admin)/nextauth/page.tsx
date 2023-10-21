@@ -1,4 +1,4 @@
-import { LoginButton, LogoutButton } from '@/components/authDemo'
+import { LogoutButton } from '@/components/authDemo'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Container from '@mui/material/Container'
@@ -11,11 +11,10 @@ export default function Home()
 			<Container>
 				<Box>
 					<Card>
-						<Typography variant="h2">Hello World ~</Typography>
+						<Typography variant="h2">Hello World ~ Signed In</Typography>
 					</Card>
 				</Box>
 				<Box>
-					<LoginButton />
 					<LogoutButton />
 				</Box>
 			</Container>
