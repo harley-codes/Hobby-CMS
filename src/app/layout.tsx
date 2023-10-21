@@ -4,7 +4,9 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import './globals.css'
 
+import { NextAuthProvider } from '@/app/NextAuthProvider'
 import type { Metadata } from 'next'
+import { getServerSession } from 'next-auth/next'
 import { Roboto } from 'next/font/google'
 
 const roboto = Roboto({
@@ -18,15 +20,19 @@ export const metadata: Metadata = {
 	robots: 'noindex, nofollow'
 }
 
-export default function RootLayout({
-	children,
-}: {
-	children: React.ReactNode
-})
+export default async function RootLayout(props: ChildProps)
 {
+	const session = await getServerSession()
+
+	const { children } = props
+
 	return (
 		<html lang="en" className={roboto.className}>
-			<body className={roboto.className}>{children}</body>
+			<body className={roboto.className}>
+				<NextAuthProvider session={session}>
+					{children}
+				</NextAuthProvider>
+			</body>
 		</html>
 	)
 }
