@@ -1,0 +1,26 @@
+.main {
+	background-color: #cccccc;
+	background-image: url("/images/landing-page-01.jpg");
+	background-size: cover;
+	position: fixed;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+.contentWrapper {
+	margin: auto;
+}
+
+.content {
+	$bg-col: rgba(92, 92, 92, 0.3);
+	$txt-col: rgba(255, 255, 255, 0.9);
+	$glow-col: rgba(255, 255, 255, 0.75);
+	$feather: 0.1em;
+	color: $txt-col;
+	backdrop-filter: blur(1em);
+	background: $bg-col;
+	box-shadow: 0 0 0.1em 0.2em $glow-col;
+	border-radius: 1.5em;
+}

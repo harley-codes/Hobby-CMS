@@ -1,23 +1,33 @@
-import { LoginButton, LogoutButton } from '@/components/authDemo'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
+import styles from '@/app/page.module.scss'
 
-export default function Home()
+import { CallToAction, HeaderContent } from '@/app/page.components'
+import { Container, Stack, Typography } from '@mui/material'
+import { Lemon } from 'next/font/google'
+
+const lemonFont = Lemon({
+	weight: ['400'],
+	subsets: ['latin'],
+	display: 'swap',
+	fallback: ['Helvetica', 'Arial', 'sans-serif'],
+})
+
+export default function LandingPage()
 {
 	return (
-		<main>
-			<Container>
-				<Box>
-					<Card>
-						<Typography variant="h2">Hello World ~</Typography>
-					</Card>
-				</Box>
-				<Box>
-					<LoginButton />
-					<LogoutButton />
-				</Box>
+		<main className={styles.main}>
+			<Container maxWidth="md" className={styles.contentWrapper}>
+				<Stack className={styles.content} padding={3} gap={2}>
+					<Typography
+						sx={{
+							typography: { sm: 'h2', xs: 'h4' },
+							textShadow: '2px 2px rgba(0,0,0,0.4)'
+						}}
+						mb={2} className={lemonFont.className}>
+						Hobby CMS
+					</Typography>
+					<HeaderContent />
+					<CallToAction />
+				</Stack>
 			</Container>
 		</main>
 	)
