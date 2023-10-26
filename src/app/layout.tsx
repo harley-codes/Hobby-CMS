@@ -1,8 +1,8 @@
+import '@/styles/global.scss'
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import './globals.css'
 
 import { NextAuthProvider } from '@/app/NextAuthProvider'
 import type { Metadata } from 'next'

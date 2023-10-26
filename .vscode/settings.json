@@ -17,9 +17,6 @@
 	"files.insertFinalNewline": true,
 	"eslint.format.enable": true,
 	"editor.formatOnSave": true,
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "vscode.typescript-language-features"
-	},
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true,
 		"source.fixAll.eslint": true
@@ -32,4 +29,14 @@
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},
+	"[typescript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"workbench.editor.labelFormat": "short",
 }
