@@ -4,7 +4,7 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
-import { NextAuthProvider } from '@/app/NextAuthProvider'
+import { NextAuthProvider } from '@/modules/auth/NextAuthProvider'
 import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth/next'
 import { Roboto } from 'next/font/google'

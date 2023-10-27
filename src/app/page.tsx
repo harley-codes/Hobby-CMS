@@ -1,15 +1,8 @@
 import styles from '@/app/page.module.scss'
 
 import { CallToAction, HeaderContent } from '@/app/page.components'
+import { lemonFont } from '@/modules/fonts/lemonFont'
 import { Container, Stack, Typography } from '@mui/material'
-import { Lemon } from 'next/font/google'
-
-const lemonFont = Lemon({
-	weight: ['400'],
-	subsets: ['latin'],
-	display: 'swap',
-	fallback: ['Helvetica', 'Arial', 'sans-serif'],
-})
 
 export default function LandingPage()
 {
