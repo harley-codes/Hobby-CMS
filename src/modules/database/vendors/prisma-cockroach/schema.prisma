@@ -1,0 +1,46 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "cockroachdb"
+    url      = env("DATABASE_PRISMA_COCKROACH_DATABASE_URL")
+}
+
+model Project {
+    id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name         String        @db.String()
+    active       Boolean       @db.Bool
+    // Relational
+    posts        Post[]
+    accessTokens AccessToken[]
+}
+
+model AccessToken {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    idProject String?  @db.Uuid
+    token     String   @default(dbgenerated("md5(random()::text)")) @db.String()
+    // Relational
+    project   Project? @relation(fields: [idProject], references: [id])
+}
+
+model Post {
+    id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    idProject        String?    @db.Uuid
+    name             String     @db.String()
+    description      String?    @db.String()
+    featuredImageURL String?    @db.String()
+    date             BigInt     @db.Int8
+    blocks           Json       @db.JsonB
+    meta             Json       @db.JsonB
+    tags             Json       @db.JsonB
+    status           PostStatus
+    // Relational
+    project          Project?   @relation(fields: [idProject], references: [id])
+}
+
+enum PostStatus {
+    ACTIVE
+    DISABLED
+    HIDDEN
+}
