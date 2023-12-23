@@ -12,9 +12,9 @@ import { useState } from 'react'
 
 const navLinks = [
 	{ title: 'Dashboard', path: '/dashboard' },
-	{ title: 'Projects', path: '/projects' },
-	{ title: 'Posts', path: '/posts' },
-	{ title: 'Images', path: '/images' },
+	{ title: 'Projects', path: '/dashboard/projects' },
+	{ title: 'Posts', path: '/dashboard/posts' },
+	{ title: 'Images', path: '/dashboard/images' },
 ]
 
 type MenuButtonProps = { title: string, path?: string, action?: () => void }
