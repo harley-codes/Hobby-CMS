@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+		"streetsidesoftware.code-spell-checker",
+		"github.vscode-github-actions",
+		"wix.vscode-import-cost",
+		"prisma.prisma"
+	]
+}
