@@ -27,7 +27,7 @@ model AccessToken {
 model Post {
     id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     idProject        String?    @db.Uuid
-    name             String     @db.String()
+    title            String     @db.String()
     description      String?    @db.String()
     featuredImageURL String?    @db.String()
     date             BigInt     @db.Int8
