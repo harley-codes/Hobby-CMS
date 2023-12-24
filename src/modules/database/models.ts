@@ -2,6 +2,7 @@ type Project = {
 	id: string;
 	name: string;
 	active: boolean;
+	meta: Record<string, string>;
 	posts: Post[];
 	accessTokens: AccessToken[];
 };
@@ -29,4 +30,6 @@ type Post = {
 
 type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'
 
-type ProjectListItem = Pick<Project, 'id' | 'name' | 'active'>;
+type ProjectDetail = Pick<Project, 'id' | 'name' | 'active' | 'meta'> & {
+	accessTokens: Pick<AccessToken, 'id' | 'token'>[];
+};

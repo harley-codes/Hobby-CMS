@@ -11,6 +11,7 @@ model Project {
     id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     name         String        @db.String()
     active       Boolean       @db.Bool
+    meta         Json          @db.JsonB
     // Relational
     posts        Post[]
     accessTokens AccessToken[]

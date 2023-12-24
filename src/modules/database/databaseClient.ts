@@ -1,4 +1,5 @@
 
 export interface DatabaseClient {
-	getProjectListAsync(): Promise<ProjectListItem[]>;
+	getProjectListAsync(): Promise<ProjectDetail[]>;
+	createProjectAsync(name: string): Promise<ProjectDetail>;
 }
