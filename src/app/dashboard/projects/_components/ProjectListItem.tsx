@@ -97,7 +97,13 @@ export function ProjectListItem(props: Props)
 													}
 												}}
 											>
-												<Typography variant="button">{token.token}</Typography>
+												<Typography variant="button">
+													{
+														token.token.slice(0, 4) +
+														'.'.repeat(token.token.length - 8) +
+														token.token.slice(-4)
+													}
+												</Typography>
 												<IconButton
 													size="small" sx={{ visibility: 'hidden' }}
 													onClick={() => navigator.clipboard.writeText(token.token)}
