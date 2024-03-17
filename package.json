@@ -1,39 +1,40 @@
 {
-	"name": "hobby-cms",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev",
-		"dev:t": "next dev --turbo",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint",
-		"lint:fix": "next lint --fix",
-		"db:prisma-cockroach:generate": "prisma generate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
-		"db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma"
-	},
-	"dependencies": {
-		"@emotion/react": "^11.11.1",
-		"@emotion/styled": "^11.11.0",
-		"@fontsource/roboto": "^5.0.8",
-		"@mui/icons-material": "^5.14.13",
-		"@mui/material": "^5.14.14",
-		"@preact/signals-react": "^2.0.0",
-		"@prisma/client": "5.7.1",
-		"linq": "^4.0.2",
-		"next": "13.5.6",
-		"next-auth": "^4.24.3",
-		"react": "^18",
-		"react-dom": "^18",
-		"sass": "^1.69.5"
-	},
-	"devDependencies": {
-		"@types/node": "^20",
-		"@types/react": "^18",
-		"@types/react-dom": "^18",
-		"eslint": "^8",
-		"eslint-config-next": "13.5.6",
-		"typescript": "^5",
-		"prisma": "^5.7.1"
-	}
+  "name": "hobby-cms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:t": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "db:prisma-cockroach:generate": "prisma generate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
+    "db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.13",
+    "@mui/material": "^5.14.14",
+    "@prisma/client": "5.7.1",
+    "@types/uuid": "^9.0.8",
+    "linq": "^4.0.2",
+    "next": "13.5.6",
+    "next-auth": "^4.24.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "sass": "^1.69.5",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.6",
+    "typescript": "^5",
+    "prisma": "^5.7.1"
+  }
 }

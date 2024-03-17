@@ -1,76 +1,194 @@
+/**
+ * ProjectList generates a list of ProjectListItemComponents
+ * Only one project can be editable at a time;
+ * If the accordion is closed before saving, the changes are discarded.
+ * For the active project, instead of passing projects[index], we pass activeProject.
+ * activeProject is used to update projects[] when the user saves changes.
+ * Because only one project is updatable at a time, we don't need to reference projectId for most handlers.
+ */
+
 'use client'
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Accordion, AccordionDetails, AccordionSummary, Button, FormControlLabel, Switch, TextField, Typography } from '@mui/material'
-import { signal } from '@preact/signals-react'
-import Enumerable from 'linq'
+import { createProjectTokenServerAction, deleteProjectTokenServerAction } from '@/app/dashboard/_actions/accessTokenActions'
+import { deleteProjectServerAction, updateProjectServerAction } from '@/app/dashboard/_actions/projectActions'
+import { ProjectListItem } from '@/app/dashboard/projects/_components/ProjectListItem'
+import { invokeConfirmationModal } from '@/components/confirmationModal'
+import { invokeLoadingModal } from '@/components/loadingModal'
+import { ProjectUpdateValues } from '@/modules/database/requestTypes'
+import { ProjectDetail } from '@/modules/database/responseTypes'
+import { useCallback, useMemo, useState } from 'react'
 
-type Props = {
-	projects: ProjectDetail[]
-}
-
-export function ProjectList(props: Props)
+export function ProjectList(props: { projects: ProjectDetail[] })
 {
-	const projects = signal(props.projects)
-	const activeProject = signal(Enumerable.from(props.projects).firstOrDefault() ?? null)
-	const isSaving = signal(false)
+	const [projects, setProjects] = useState(props.projects)
+	const [activeProject, setActiveProject] = useState<ProjectDetail | undefined>(projects[0])
 
-	if (projects.value.length === 0)
+	const hasActiveProjectDetailsChanged = useMemo(() =>
 	{
-		return (
-			<Accordion disabled>
-				<AccordionSummary>
-					<Typography variant="h6">No projects created yet...</Typography>
-				</AccordionSummary>
-			</Accordion>
-		)
+		if (!activeProject) return false
+
+		const originalProject = projects.find(x => x.id === activeProject.id)
+		if (!originalProject) return false
+
+		const details = (project: ProjectDetail) => JSON.stringify({
+			name: project.name,
+			active: project.active,
+			meta: project.meta
+		})
+
+		return details(activeProject) !== details(originalProject)
+	}, [activeProject, projects])
+
+	const checkProjectIsActive = useCallback((projectId: string) => activeProject?.id === projectId, [activeProject])
+
+	function setActiveProjectHandler(projectId: string)
+	{
+		if (projectId === activeProject?.id) return
+
+		const project = projects.find(x => x.id === projectId)
+		if (project) setActiveProject(project)
 	}
 
-	function isSameProject(project1: ProjectDetail | null, project2: ProjectDetail | null)
+	function updateActiveProjectHandler(values: ProjectUpdateValues)
 	{
-		return project1?.id === project2?.id
+		if (!activeProject) return
+
+		const updatedProject = { ...activeProject, ...values }
+		setActiveProject(updatedProject)
 	}
 
-	async function updateActiveProject()
+	async function saveActiveProjectHandler()
 	{
-		console.log('Update Project')
-		isSaving.value = true
+		if (!activeProject) return
+
+		invokeConfirmationModal({
+			description: 'Are you sure you want to save changes to this project?',
+			onConfirmed: (confirmed) => confirmed && save(),
+		})
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Saving Project' })
+
+		const save = async () =>
+		{
+			invokeLoading(true)
+
+			const updatedProject = await updateProjectServerAction(activeProject.id, {
+				name: activeProject.name,
+				active: activeProject.active,
+				meta: activeProject.meta,
+			})
+
+			setProjects(projects.map(project =>
+				project.id === activeProject.id
+					? updatedProject
+					: project
+			))
+
+			invokeLoading(false)
+		}
+	}
+
+	async function deleteActiveProjectHandler()
+	{
+		if (!activeProject) return
+
+		invokeConfirmationModal({
+			description: 'Are you sure you want to delete this project?',
+			onConfirmed: (confirmed) => confirmed && save(),
+		})
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Deleting Project' })
+
+		const save = async () =>
+		{
+			invokeLoading(true)
+
+			await deleteProjectServerAction(activeProject.id)
+
+			const updatedProjectList = projects.filter(project => project.id !== activeProject.id)
+
+			setProjects(updatedProjectList)
+			setActiveProject(updatedProjectList[0] ?? undefined)
+
+			invokeLoading(false)
+		}
+	}
+
+	async function createTokenHandler()
+	{
+		if (!activeProject) return
+
+		invokeConfirmationModal({
+			description: 'Are you sure you want to create new token?',
+			onConfirmed: (confirmed) => confirmed && save(),
+		})
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Creating Token' })
+
+		const save = async () =>
+		{
+			invokeLoading(true)
+
+			const newToken = await createProjectTokenServerAction(activeProject.id)
+
+			const updatedProjectList = projects.map(project =>
+				project.id === activeProject.id
+					? { ...project, accessTokens: [...project.accessTokens, newToken] }
+					: project
+			)
+
+			setProjects(updatedProjectList)
+			setActiveProject(updatedProjectList.find(project => project.id === activeProject.id) ?? undefined)
+
+			invokeLoading(false)
+		}
+	}
+
+	async function deleteTokenHandler(tokenId: string)
+	{
+		if (!activeProject) return
+
+		invokeConfirmationModal({
+			description: 'Are you sure you want to delete this token?',
+			onConfirmed: (confirmed) => confirmed && save(),
+		})
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Deleting Token' })
+
+		const save = async () =>
+		{
+			invokeLoading(true)
+
+			await deleteProjectTokenServerAction(tokenId)
+
+			const updatedProjectList = projects.map(project =>
+				project.id === activeProject.id
+					? { ...project, accessTokens: project.accessTokens.filter(x => x.id !== tokenId) }
+					: project
+			)
+
+			setProjects(updatedProjectList)
+			setActiveProject(updatedProjectList.find(project => project.id === activeProject.id) ?? undefined)
+
+			invokeLoading(false)
+		}
 	}
 
 	return (
 		<div>
-			{projects.value.map((project) => (
-				<Accordion
+			{projects.map(project => (
+				<ProjectListItem
 					key={project.id}
-					expanded={isSameProject(activeProject.value, project)}
-					disabled={isSameProject(activeProject.value, project) && isSaving.value}
-				>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography variant="h6">{project.name}</Typography>
-					</AccordionSummary>
-					<AccordionDetails>
-						<TextField
-							label="Project Name"
-							defaultValue={project.name}
-							{...(isSameProject(activeProject.value, project) ? {
-								value: activeProject.value!.name,
-								onChange: (e) => { activeProject.value!.name = e.currentTarget.value }
-							} : {})}
-						/>
-						<FormControlLabel
-							label="Active"
-							labelPlacement='start'
-							defaultChecked={project.active}
-							{...(isSameProject(activeProject.value, project) ? {
-								value: activeProject.value!.active,
-								// TODO: Update type casting when MUI fixes the issue
-								onChange: (e) => { activeProject.value!.active = (e.target as HTMLInputElement).checked }
-							} : {})}
-							control={<Switch />}
-						/>
-						<Button onClick={updateActiveProject}>Update</Button>
-					</AccordionDetails>
-				</Accordion>
+					project={checkProjectIsActive(project.id) ? activeProject! : project}
+					expanded={checkProjectIsActive(project.id)}
+					detailsChangePending={checkProjectIsActive(project.id) && hasActiveProjectDetailsChanged}
+					updateDetail={updateActiveProjectHandler}
+					saveProject={saveActiveProjectHandler}
+					deleteProject={deleteActiveProjectHandler}
+					createToken={createTokenHandler}
+					deleteToken={deleteTokenHandler}
+					setActiveProject={setActiveProjectHandler}
+				/>
 			))}
 		</div>
 	)
