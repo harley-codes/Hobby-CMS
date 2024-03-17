@@ -1,5 +1,6 @@
 'use client'
 
+import { MetaDataEditor } from '@/components/MetaDataEditor'
 import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
 import
@@ -10,6 +11,7 @@ import
 	Save as SaveIcon
 } from '@mui/icons-material'
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
 
 type Props = {
 	project: ProjectDetail
@@ -22,9 +24,6 @@ type Props = {
 	deleteToken: (tokenId: string) => void
 	setActiveProject: (projectId: string) => void
 }
-
-// TODO: Meta Component
-// TODO: Mask token
 
 export function ProjectListItem(props: Props)
 {
@@ -39,6 +38,8 @@ export function ProjectListItem(props: Props)
 		deleteToken,
 		setActiveProject
 	} = props
+
+	const [metaDataValid, setMetaDataValid] = useState(true)
 
 	return (
 		<Accordion
@@ -124,6 +125,12 @@ export function ProjectListItem(props: Props)
 							</TableBody>
 						</Table>
 					</TableContainer>
+
+					<MetaDataEditor
+						meta={project.meta ?? {}}
+						onMetaChange={(data) => updateDetail({ meta: data })}
+						onDataValidation={(isValid) => setMetaDataValid(isValid)}
+					/>
 				</Stack>
 			</AccordionDetails>
 
@@ -133,7 +140,7 @@ export function ProjectListItem(props: Props)
 						Delete
 					</Button>
 					<Box margin="auto" />
-					<Button disabled={!detailsChangePending} variant="outlined" onClick={saveProject} endIcon={<SaveIcon />}>
+					<Button disabled={!detailsChangePending || !metaDataValid} variant="outlined" onClick={saveProject} endIcon={<SaveIcon />}>
 						Save
 					</Button>
 				</Stack>
