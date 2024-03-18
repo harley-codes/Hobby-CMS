@@ -1,16 +1,16 @@
 'use client'
 
+import { TokenList } from '@/app/dashboard/projects/_components/TokenList'
 import { MetaDataEditor } from '@/components/MetaDataEditor'
 import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
 import
 {
-	ContentCopy as ContentCopyIcon,
 	Delete as DeleteIcon,
 	ExpandMore as ExpandMoreIcon,
 	Save as SaveIcon
 } from '@mui/icons-material'
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 
 type Props = {
@@ -71,60 +71,11 @@ export function ProjectListItem(props: Props)
 						</Select>
 					</FormControl>
 
-					<TableContainer component={Paper}>
-						<Table size="small">
-							<TableHead>
-								<TableRow>
-									<TableCell>Tokens</TableCell>
-									<TableCell align="right">
-										<Button
-											size="small" color="success"
-											onClick={createToken}
-										>Create New Token</Button>
-									</TableCell>
-								</TableRow>
-							</TableHead>
-
-							<TableBody>
-								{project.accessTokens.map((token) => (
-									<TableRow key={token.id}>
-										<TableCell>
-											<Stack
-												gap={1} direction="row"
-												sx={{
-													cursor: 'pointer',
-													'&:hover > button': {
-														visibility: 'visible'
-													}
-												}}
-											>
-												<Typography variant="button">
-													{
-														token.token.slice(0, 4) +
-														'.'.repeat(token.token.length - 8) +
-														token.token.slice(-4)
-													}
-												</Typography>
-												<IconButton
-													size="small" sx={{ visibility: 'hidden' }}
-													onClick={() => navigator.clipboard.writeText(token.token)}
-												>
-													<ContentCopyIcon fontSize="inherit" />
-												</IconButton>
-											</Stack>
-										</TableCell>
-										<TableCell align="right">
-											<IconButton
-												size="small"
-												onClick={() => deleteToken(token.id)}>
-												<DeleteIcon fontSize="inherit" />
-											</IconButton>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
+					<TokenList
+						accessTokens={project.accessTokens}
+						createToken={createToken}
+						deleteToken={deleteToken}
+					/>
 
 					<MetaDataEditor
 						meta={project.meta ?? {}}
