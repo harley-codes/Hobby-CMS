@@ -1,11 +1,11 @@
 'use client'
 
-import { newProjectEvent } from '@/modules/custom-events/events/newProjectEvent'
+import { invokeNewProjectRequest } from '@/app/dashboard/projects/_components/CreateProjectDialog'
 import { Button } from '@mui/material'
 
 export function CreateProjectButton()
 {
 	return (
-		<Button onClick={() => newProjectEvent.callEvent(null)}>Create Project</Button>
+		<Button onClick={() => invokeNewProjectRequest()}>Create Project</Button>
 	)
 }

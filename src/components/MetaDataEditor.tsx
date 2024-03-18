@@ -36,6 +36,11 @@ type Props = {
 	onDataValidation: (isValid: boolean) => void
 }
 
+function MetaIcon({ metaKey }: { metaKey: string })
+{
+	return (knownMetaKeys[metaKey.toLowerCase()] ?? (() => <TagIcon />))()
+}
+
 export function MetaDataEditor(props: Props)
 {
 	const { meta, onMetaChange, onDataValidation } = props
@@ -104,7 +109,7 @@ export function MetaDataEditor(props: Props)
 					{workingSet.map((item, index) => (
 						<TableRow key={index}>
 							<TableCell align="center">
-								{knownMetaKeys[item.key] ? knownMetaKeys[item.key]() : <TagIcon />}
+								<MetaIcon metaKey={item.key} />
 							</TableCell>
 							<TableCell>
 								<TextField
@@ -114,7 +119,6 @@ export function MetaDataEditor(props: Props)
 									value={item.key}
 									onChange={(e) => updateKeyHandler(index, e.currentTarget.value)}
 									error={isKeyInvalid(item.key)}
-
 								/>
 							</TableCell>
 							<TableCell>
@@ -136,7 +140,7 @@ export function MetaDataEditor(props: Props)
 					))}
 					<TableRow>
 						<TableCell align="center">
-							{knownMetaKeys[newKeyTemp] ? knownMetaKeys[newKeyTemp]() : <TagIcon />}
+							<MetaIcon metaKey={newKeyTemp} />
 						</TableCell>
 						<TableCell colSpan={2}>
 							<TextField

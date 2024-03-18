@@ -10,7 +10,8 @@
 'use client'
 
 import { createProjectTokenServerAction, deleteProjectTokenServerAction } from '@/app/dashboard/_actions/accessTokenActions'
-import { deleteProjectServerAction, updateProjectServerAction } from '@/app/dashboard/_actions/projectActions'
+import { createProjectServerAction, deleteProjectServerAction, updateProjectServerAction } from '@/app/dashboard/_actions/projectActions'
+import { CreateProjectDialog } from '@/app/dashboard/projects/_components/CreateProjectDialog'
 import { ProjectListItem } from '@/app/dashboard/projects/_components/ProjectListItem'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { invokeLoadingModal } from '@/components/LoadingModal'
@@ -18,7 +19,7 @@ import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
 import { useCallback, useMemo, useState } from 'react'
 
-export function ProjectList(props: { projects: ProjectDetail[] })
+export function ProjectView(props: { projects: ProjectDetail[] })
 {
 	const [projects, setProjects] = useState(props.projects)
 	const [activeProject, setActiveProject] = useState<ProjectDetail | undefined>(projects[0])
@@ -55,6 +56,22 @@ export function ProjectList(props: { projects: ProjectDetail[] })
 
 		const updatedProject = { ...activeProject, ...values }
 		setActiveProject(updatedProject)
+	}
+
+	async function createProjectHandler(newName: string)
+	{
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Creating Project' })
+
+		invokeLoading(true)
+
+		const newProject = await createProjectServerAction(newName, true)
+
+		setProjects([newProject, ...projects])
+		setActiveProject(newProject)
+
+		invokeLoading(false)
+
+		window.scrollTo({ top: 0, behavior: 'smooth' })
 	}
 
 	async function saveActiveProjectHandler()
@@ -190,6 +207,11 @@ export function ProjectList(props: { projects: ProjectDetail[] })
 					setActiveProject={setActiveProjectHandler}
 				/>
 			))}
+
+			<CreateProjectDialog
+				currentProjectNames={projects.map(x => x.name)}
+				onCreateProject={createProjectHandler}
+			/>
 		</div>
 	)
 }

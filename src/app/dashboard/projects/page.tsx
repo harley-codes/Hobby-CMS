@@ -1,5 +1,5 @@
 import { CreateProjectButton } from '@/app/dashboard/projects/_components/CreateProjectButton'
-import { ProjectList } from '@/app/dashboard/projects/_components/ProjectList'
+import { ProjectView } from '@/app/dashboard/projects/_components/ProjectView'
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { Stack, Typography } from '@mui/material'
 
@@ -20,8 +20,7 @@ export default async function ProjectsPage()
 				<Typography variant="h4" component="header">Projects</Typography>
 				<CreateProjectButton />
 			</Stack>
-			<ProjectList projects={projects} />
-			{/* <CreateProjectDialog /> */}
+			<ProjectView projects={projects} />
 		</Stack>
 	)
 }
