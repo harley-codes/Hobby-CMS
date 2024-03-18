@@ -1,19 +1,20 @@
-type Project = {
+export type ProjectModel = {
 	id: string;
 	name: string;
 	active: boolean;
-	posts: Post[];
-	accessTokens: AccessToken[];
+	meta: Record<string, string>;
+	posts: PostModel[];
+	accessTokens: AccessTokenModel[];
 };
 
-type AccessToken = {
+export type AccessTokenModel = {
 	id: string;
 	idProject: string;
 	token: string;
-	project: Project | null;
+	project: ProjectModel | null;
 }
 
-type Post = {
+export type PostModel = {
 	id: string;
 	idProject: string;
 	title: string;
@@ -24,9 +25,7 @@ type Post = {
 	meta: Record<string, string>;
 	tags: string[];
 	status: PostStatus;
-	project: Project | null;
+	project: ProjectModel | null;
 }
 
-type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'
-
-type ProjectListItem = Pick<Project, 'id' | 'name' | 'active'>;
+export type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'

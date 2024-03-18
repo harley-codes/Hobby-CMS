@@ -4,6 +4,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
+import { ConfirmationModal } from '@/components/ConfirmationModal'
+import LoadingModal from '@/components/LoadingModal'
 import { NextAuthProvider } from '@/modules/auth/NextAuthProvider'
 import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth/next'
@@ -31,6 +33,8 @@ export default async function RootLayout(props: ChildProps)
 			<body className={roboto.className}>
 				<NextAuthProvider session={session}>
 					{children}
+					<ConfirmationModal />
+					<LoadingModal />
 				</NextAuthProvider>
 			</body>
 		</html>
