@@ -1,5 +1,5 @@
-import { ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, ProjectDetail } from '@/modules/database/responseTypes'
+import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
+import { AccessTokenDetail, DataFileDetails, ProjectDetail } from '@/modules/database/responseTypes'
 
 export interface DatabaseClient {
 	// Project
@@ -11,4 +11,11 @@ export interface DatabaseClient {
 	// Token
 	createAccessTokenAsync(projectId: string): Promise<AccessTokenDetail>;
 	deleteAccessTokenAsync(tokenId: string): Promise<void>;
+
+	// DataFile
+	getDataFileDetailsAsync(fileId: string): Promise<DataFileDetails>;
+	getDataFileDataAsync(fileId: string): Promise<string>;
+	getDataFileThumbnailAsync(fileId: string): Promise<string>;
+	createDataFileAsync(file: NewDataFile): Promise<DataFileDetails>;
+	deleteDataFileAsync(fileId: string): Promise<void>;
 }

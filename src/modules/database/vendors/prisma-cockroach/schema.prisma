@@ -31,7 +31,7 @@ model Post {
     title            String     @db.String()
     description      String?    @db.String()
     featuredImageURL String?    @db.String()
-    date             BigInt     @db.Int8
+    date             Int        @db.Int4
     blocks           Json       @db.JsonB
     meta             Json       @db.JsonB
     tags             Json       @db.JsonB
@@ -44,4 +44,16 @@ enum PostStatus {
     ACTIVE
     DISABLED
     HIDDEN
+}
+
+model DataFile {
+    id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name          String  @db.String()
+    date          Int     @db.Int4
+    fileMimeType  String  @db.String()
+    fileExtension String  @db.String()
+    data64        String  @db.String()
+    hasThumbnail  Boolean @db.Bool
+    thumbnail64   String? @db.String()
+    fileSizeKb    Int     @db.Int4
 }
