@@ -30,14 +30,15 @@ export type PostModel = {
 
 export type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'
 
-export type DataFileModel = {
+export type FileModel = {
 	id: string
 	name: string
+	mimeType: string
+	extension: string
 	date: Date
-	fileMimeType: string
-	fileExtension: string
+	sizeKb: number
+	meta: Record<string, string>
 	data64: string
 	hasThumbnail: boolean
 	thumbnail64: string | undefined
-	fileSizeKb: number
 }

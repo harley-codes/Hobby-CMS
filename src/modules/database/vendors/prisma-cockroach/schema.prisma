@@ -46,14 +46,15 @@ enum PostStatus {
     HIDDEN
 }
 
-model DataFile {
-    id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    name          String  @db.String()
-    date          Int     @db.Int4
-    fileMimeType  String  @db.String()
-    fileExtension String  @db.String()
-    data64        String  @db.String()
-    hasThumbnail  Boolean @db.Bool
-    thumbnail64   String? @db.String()
-    fileSizeKb    Int     @db.Int4
+model File {
+    id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name         String  @db.String()
+    mimeType     String  @db.String()
+    extension    String  @db.String()
+    date         Int     @db.Int4
+    sizeKb       Int     @db.Int4
+    meta         Json    @db.JsonB
+    data64       String  @db.String()
+    hasThumbnail Boolean @db.Bool
+    thumbnail64  String? @db.String()
 }

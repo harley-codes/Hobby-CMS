@@ -1,14 +1,15 @@
-import { DataFileModel, ProjectModel } from '@/modules/database/models'
+import { FileModel, ProjectModel } from '@/modules/database/models'
 
 export type ProjectUpdateValues = {
 	[K in keyof Pick<ProjectModel, 'name' | 'active' | 'meta'>]?: ProjectModel[K]
 };
 
-export type NewDataFile = Pick<DataFileModel,
+export type NewDataFile = Pick<FileModel,
 	'name' |
-	'fileMimeType' |
-	'fileExtension' |
-	'fileSizeKb' |
+	'mimeType' |
+	'extension' |
+	'sizeKb' |
+	'meta' |
 	'data64' |
 	'thumbnail64' |
 	'hasThumbnail'

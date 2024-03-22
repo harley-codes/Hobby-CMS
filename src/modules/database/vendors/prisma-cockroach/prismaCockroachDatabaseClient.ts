@@ -122,7 +122,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	// #region DataFile
 	async getDataFileDetailsAsync(fileId: string): Promise<DataFileDetails>
 	{
-		const dataFile = await this.prisma.dataFile.findUnique({
+		const dataFile = await this.prisma.file.findUnique({
 			where: {
 				id: fileId
 			},
@@ -130,10 +130,11 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				id: true,
 				name: true,
 				date: true,
-				fileMimeType: true,
-				fileExtension: true,
-				fileSizeKb: true,
+				mimeType: true,
+				extension: true,
+				sizeKb: true,
 				hasThumbnail: true,
+				meta: true,
 			}
 		})
 
@@ -146,16 +147,17 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			id: dataFile.id,
 			name: dataFile.name,
 			date: new Date(dataFile.date),
-			fileMimeType: dataFile.fileMimeType,
-			fileExtension: dataFile.fileExtension,
-			fileSizeKb: dataFile.fileSizeKb,
-			hasThumbnail: dataFile.hasThumbnail
+			mimeType: dataFile.mimeType,
+			extension: dataFile.extension,
+			sizeKb: dataFile.sizeKb,
+			hasThumbnail: dataFile.hasThumbnail,
+			meta: this.getPrismaJsonValue(dataFile.meta)
 		}
 	}
 
 	async getDataFileDataAsync(fileId: string): Promise<string>
 	{
-		const dataFile = await this.prisma.dataFile.findUnique({
+		const dataFile = await this.prisma.file.findUnique({
 			where: {
 				id: fileId
 			},
@@ -174,7 +176,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 	async getDataFileThumbnailAsync(fileId: string): Promise<string>
 	{
-		const dataFile = await this.prisma.dataFile.findUnique({
+		const dataFile = await this.prisma.file.findUnique({
 			where: {
 				id: fileId
 			},
@@ -198,7 +200,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 	async createDataFileAsync(file: NewDataFile): Promise<DataFileDetails>
 	{
-		const dataFile = await this.prisma.dataFile.create({
+		const dataFile = await this.prisma.file.create({
 			data: {
 				...file,
 				date: new Date().getTime()
@@ -209,16 +211,17 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			id: dataFile.id,
 			name: dataFile.name,
 			date: new Date(dataFile.date),
-			fileMimeType: dataFile.fileMimeType,
-			fileExtension: dataFile.fileExtension,
-			fileSizeKb: dataFile.fileSizeKb,
-			hasThumbnail: dataFile.hasThumbnail
+			mimeType: dataFile.mimeType,
+			extension: dataFile.extension,
+			sizeKb: dataFile.sizeKb,
+			hasThumbnail: dataFile.hasThumbnail,
+			meta: this.getPrismaJsonValue(dataFile.meta)
 		}
 	}
 
 	async deleteDataFileAsync(fileId: string): Promise<void>
 	{
-		await this.prisma.dataFile.delete({
+		await this.prisma.file.delete({
 			where: {
 				id: fileId
 			}
