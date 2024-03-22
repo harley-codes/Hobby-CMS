@@ -1,6 +1,6 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
-import { ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, ProjectDetail } from '@/modules/database/responseTypes'
+import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
+import { AccessTokenDetail, DataFileDetails, ProjectDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 
 const projectDetailSelect = {
@@ -25,7 +25,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		this.prisma = new PrismaClient()
 	}
 
-	//Project
+	// #region Project
 	async getProjectsAsync(): Promise<ProjectDetail[]>
 	{
 		const projects = await this.prisma.project.findMany({
@@ -86,8 +86,9 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 		return {...project, meta: this.getPrismaJsonValue(project.meta)}
 	}
+	// #endregion
 
-	//Token
+	// #region Token
 	async createAccessTokenAsync(projectId: string): Promise<AccessTokenDetail>
 	{
 		const token = await this.prisma.accessToken.create({
@@ -116,6 +117,117 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			}
 		})
 	}
+	// #endregion
+
+	// #region DataFile
+	async getDataFileDetailsAsync(fileId: string): Promise<DataFileDetails>
+	{
+		const dataFile = await this.prisma.file.findUnique({
+			where: {
+				id: fileId
+			},
+			select: {
+				id: true,
+				name: true,
+				date: true,
+				mimeType: true,
+				extension: true,
+				sizeKb: true,
+				hasThumbnail: true,
+				meta: true,
+			}
+		})
+
+		if (!dataFile)
+		{
+			throw new Error(`Data file with id "${fileId}" not found.`)
+		}
+
+		return {
+			id: dataFile.id,
+			name: dataFile.name,
+			date: new Date(dataFile.date),
+			mimeType: dataFile.mimeType,
+			extension: dataFile.extension,
+			sizeKb: dataFile.sizeKb,
+			hasThumbnail: dataFile.hasThumbnail,
+			meta: this.getPrismaJsonValue(dataFile.meta)
+		}
+	}
+
+	async getDataFileDataAsync(fileId: string): Promise<string>
+	{
+		const dataFile = await this.prisma.file.findUnique({
+			where: {
+				id: fileId
+			},
+			select: {
+				data64: true
+			}
+		})
+
+		if (!dataFile)
+		{
+			throw new Error(`Data file with id "${fileId}" not found.`)
+		}
+
+		return dataFile.data64
+	}
+
+	async getDataFileThumbnailAsync(fileId: string): Promise<string>
+	{
+		const dataFile = await this.prisma.file.findUnique({
+			where: {
+				id: fileId
+			},
+			select: {
+				thumbnail64: true
+			}
+		})
+
+		if (!dataFile)
+		{
+			throw new Error(`Data file with id "${fileId}" not found.`)
+		}
+
+		if (!dataFile.thumbnail64)
+		{
+			throw new Error(`Data file with id "${fileId}" does not have a thumbnail.`)
+		}
+
+		return dataFile.thumbnail64
+	}
+
+	async createDataFileAsync(file: NewDataFile): Promise<DataFileDetails>
+	{
+		const dataFile = await this.prisma.file.create({
+			data: {
+				...file,
+				date: new Date().getTime()
+			},
+		})
+
+		return {
+			id: dataFile.id,
+			name: dataFile.name,
+			date: new Date(dataFile.date),
+			mimeType: dataFile.mimeType,
+			extension: dataFile.extension,
+			sizeKb: dataFile.sizeKb,
+			hasThumbnail: dataFile.hasThumbnail,
+			meta: this.getPrismaJsonValue(dataFile.meta)
+		}
+	}
+
+	async deleteDataFileAsync(fileId: string): Promise<void>
+	{
+		await this.prisma.file.delete({
+			where: {
+				id: fileId
+			}
+		})
+	}
+	// #endregion
 
 	private getPrismaJsonValue<T>(jsonValue: Prisma.JsonValue)
 	{
