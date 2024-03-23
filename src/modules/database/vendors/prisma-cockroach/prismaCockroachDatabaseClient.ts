@@ -2,6 +2,7 @@ import { DatabaseClient } from '@/modules/database/databaseClient'
 import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { AccessTokenDetail, DataFileDetails, ProjectDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
+import { DateTime } from 'luxon'
 
 const projectDetailSelect = {
 	id: true,
@@ -146,7 +147,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: new Date(dataFile.date),
+			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,
@@ -203,14 +204,16 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		const dataFile = await this.prisma.file.create({
 			data: {
 				...file,
-				date: new Date().getTime()
+				date: DateTime.utc().toMillis()
 			},
 		})
+
+
 
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: new Date(dataFile.date),
+			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,

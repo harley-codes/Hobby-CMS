@@ -15,7 +15,7 @@ export default async function ProjectsPage()
 	const projects = await getProjectsAsync()
 
 	return (
-		<Stack gap={1}>
+		<Stack spacing={2}>
 			<Stack direction="row" justifyContent="space-between">
 				<Typography variant="h4" component="header">Projects</Typography>
 				<CreateProjectButton />

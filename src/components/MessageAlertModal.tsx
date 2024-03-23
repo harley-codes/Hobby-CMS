@@ -7,31 +7,30 @@ import { createEvent } from '@/modules/custom-events/createEvent'
 import { mapRecord } from '@/modules/utility/mapRecord'
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 
-type ConfirmationEvent = {
+type MessageAlertEvent = {
 	title?: string,
 	description?: string,
-	onConfirmed: (confirmed: boolean) => void
+	onConfirmed?: () => void
 }
 
-type ConfirmationDialog = ConfirmationEvent & {
+type MessageAlertDialog = MessageAlertEvent & {
 	display: boolean,
-	confirmation?: boolean
 }
 
 let isModalMounted = false
 
-const confirmationEvent = createEvent<ConfirmationEvent>('confirmationEvent')
+const confirmationEvent = createEvent<MessageAlertEvent>('messageAlertEvent')
 
-export const invokeConfirmationModal = confirmationEvent.callEvent
+export const invokeMessageAlertModal = confirmationEvent.callEvent
 
-export function ConfirmationModal()
+export function MessageAlertModal()
 {
-	const [dialogs, setDialogs] = useState<Record<string, ConfirmationDialog>>({})
+	const [dialogs, setDialogs] = useState<Record<string, MessageAlertDialog>>({})
 
 	useEffect(() =>
 	{
 		if (isModalMounted)
-			throw new Error('Another ConfirmationModal is already mounted')
+			throw new Error('Another MessageAlertModal is already mounted')
 
 		isModalMounted = true
 
@@ -52,18 +51,17 @@ export function ConfirmationModal()
 		setDialogs(newDialogs)
 	})
 
-	function confirmationHandler(dialogKey: string, confirm: boolean)
+	function confirmationHandler(dialogKey: string)
 	{
 		const newDialogs = { ...dialogs }
 		dialogs[dialogKey].display = false
-		dialogs[dialogKey].confirmation = confirm
 		setDialogs(newDialogs)
 	}
 
 	function finalizeDialogConfirmation(dialogKey: string)
 	{
 		const dialog = dialogs[dialogKey]
-		dialog.onConfirmed(dialog.confirmation ?? false)
+		dialog.onConfirmed?.()
 
 		const newDialogs = { ...dialogs }
 		delete newDialogs[dialogKey]
@@ -81,16 +79,15 @@ export function ConfirmationModal()
 					}}
 				>
 					<DialogTitle>
-						{dialog.title ?? 'Confirmation'}
+						{dialog.title ?? 'Message'}
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
-							{dialog.description ?? 'Are you sure you want to proceed?'}
+							{dialog.description ?? 'Click Continue.'}
 						</DialogContentText>
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={() => confirmationHandler(key, false)}>Cancel</Button>
-						<Button onClick={() => confirmationHandler(key, true)} autoFocus>
+						<Button onClick={() => confirmationHandler(key)} autoFocus>
 							Proceed
 						</Button>
 					</DialogActions>
