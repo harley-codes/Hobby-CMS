@@ -2,9 +2,10 @@
 
 import { FileTypeIcon } from '@/app/dashboard/files/_components/FileTypeIcon'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
+import { ImageBox } from '@/components/ImageBox'
 import { createEvent } from '@/modules/custom-events/createEvent'
 import { NewDataFile } from '@/modules/database/requestTypes'
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, List, ListItem, ListItemText, ListSubheader, TextField } from '@mui/material'
+import { Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, List, ListItem, ListItemText, ListSubheader, TextField } from '@mui/material'
 import { useState } from 'react'
 
 const newFileRequestEvent = createEvent<NewDataFile>('newFileRequest')
@@ -98,25 +99,13 @@ export function NewFileDialog(props: Props)
 						helperText={nameValidation}
 					/>
 					{dataFile.hasThumbnail && (
-						<Box
-							sx={{
-								display: 'flex',
-								justifyContent: 'center',
-								aspectRatio: '16/10',
-								backgroundImage: `url(${dataFile.data64})`,
-								borderRadius: '0.25em',
-							}}
-						>
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
-								src={dataFile.data64}
-								alt={dataFile.name}
-								style={{
-									objectFit: 'contain',
-									height: '100%',
-								}}
-							/>
-						</Box>
+						<ImageBox
+							src={dataFile.data64}
+							alt={dataFile.name}
+							aspectRatio="16/10"
+							backgroundImageFill
+							borderRadius='0.25em'
+						/>
 					)}
 
 					{Object.entries(dataFile.meta).length > 0 && (

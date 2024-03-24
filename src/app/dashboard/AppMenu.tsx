@@ -14,7 +14,7 @@ const navLinks = [
 	{ title: 'Dashboard', path: '/dashboard' },
 	{ title: 'Projects', path: '/dashboard/projects' },
 	{ title: 'Posts', path: '/dashboard/posts' },
-	{ title: 'File Manager', path: '/dashboard/files' },
+	{ title: 'Files', path: '/dashboard/files' },
 ]
 
 type MenuButtonProps = { title: string, path?: string, action?: () => void }

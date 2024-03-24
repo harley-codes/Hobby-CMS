@@ -20,3 +20,14 @@ export type DataFileDetails = Pick<FileModel,
 	'meta' |
 	'hasThumbnail'
 >;
+
+export type DataFileSearchItem = Pick<DataFileDetails, 'id' | 'name' | 'hasThumbnail' | 'extension'>
+
+export type DataFilesPaginatedResponse = {
+	fileDetails: DataFileSearchItem[],
+	totalFiles: number
+	request: {
+		skip: number,
+		take: number
+	}
+}
