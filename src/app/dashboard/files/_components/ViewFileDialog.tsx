@@ -4,32 +4,31 @@ import { FileTypeIcon } from '@/app/dashboard/files/_components/FileTypeIcon'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { ImageBox } from '@/components/ImageBox'
 import { createEvent } from '@/modules/custom-events/createEvent'
-import { NewDataFile } from '@/modules/database/requestTypes'
+import { DataFileDetails } from '@/modules/database/responseTypes'
 import { Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, List, ListItem, ListItemText, ListSubheader, TextField } from '@mui/material'
 import { useState } from 'react'
 
-const newFileRequestEvent = createEvent<NewDataFile>('newFileRequest')
+const viewFileRequestEvent = createEvent<DataFileDetails>('viewFileRequest')
 
-export const invokeNewFileRequest = newFileRequestEvent.callEvent
+export const invokeViewFileRequest = viewFileRequestEvent.callEvent
 
 const defaultState = {
 	display: false,
-	process: false
+	delete: false
 }
 
 type Props = {
-	onFileUpload: (newFile: NewDataFile) => void
+	onFileDelete: (fileId: string) => void
 }
 
-export function NewFileDialog(props: Props)
+export function ViewFileDialog(props: Props)
 {
-	const { onFileUpload } = props
+	const { onFileDelete } = props
 
 	const [state, setState] = useState(defaultState)
-	const [dataFile, setDataFile] = useState<NewDataFile | null>(null)
-	const [nameValidation, setNameValidation] = useState(' ')
+	const [dataFile, setDataFile] = useState<DataFileDetails | null>(null)
 
-	newFileRequestEvent.useEvent((file) =>
+	viewFileRequestEvent.useEvent((file) =>
 	{
 		setState({ ...defaultState, display: true })
 		setDataFile(file)
@@ -40,25 +39,17 @@ export function NewFileDialog(props: Props)
 		setState(defaultState)
 	}
 
-	function nameChangeHandler(e: React.ChangeEvent<HTMLInputElement>)
-	{
-		if (!dataFile) return
-
-		setDataFile({ ...dataFile, name: e.currentTarget.value })
-		setNameValidation(e.currentTarget.value.trim() ? ' ' : 'Name is required')
-	}
-
-	function createStartHandler()
+	function deleteStartHandler()
 	{
 		if (!dataFile) return
 
 		invokeConfirmationModal({
-			description: 'Are you sure you want to upload this file?',
+			description: 'Are you sure you want to delete this file?',
 			onConfirmed: (confirmed) =>
 			{
 				if (confirmed)
 				{
-					setState({ ...state, display: false, process: true })
+					setState({ ...state, display: false, delete: true })
 				}
 			}
 		})
@@ -66,7 +57,7 @@ export function NewFileDialog(props: Props)
 
 	function exitHandler()
 	{
-		if (dataFile && state.process) onFileUpload(dataFile)
+		if (dataFile && state.delete) onFileDelete(dataFile.id)
 		setState(defaultState)
 		setDataFile(null)
 	}
@@ -79,7 +70,7 @@ export function NewFileDialog(props: Props)
 			}}
 			fullWidth maxWidth="xs"
 		>
-			<DialogTitle>New File</DialogTitle>
+			<DialogTitle>File View</DialogTitle>
 			<DialogContent>
 				{dataFile && (<>
 					<TextField
@@ -93,14 +84,12 @@ export function NewFileDialog(props: Props)
 								</InputAdornment>
 							),
 						}}
-						value={dataFile?.name}
-						onChange={nameChangeHandler}
-						error={nameValidation !== ' '}
-						helperText={nameValidation}
+						defaultValue={dataFile?.name}
+						disabled
 					/>
 					{dataFile.hasThumbnail && (
 						<ImageBox
-							src={dataFile.data64}
+							src={`/api/public/files/data/${dataFile.id}`}
 							alt={dataFile.name}
 							aspectRatio="16/10"
 							backgroundImageFill
@@ -130,8 +119,8 @@ export function NewFileDialog(props: Props)
 				</>)}
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={cancelHandler}>Cancel</Button>
-				<Button onClick={createStartHandler} disabled={nameValidation !== ' '}>Create</Button>
+				<Button onClick={cancelHandler}>Close</Button>
+				<Button onClick={deleteStartHandler} color='warning'>Delete</Button>
 			</DialogActions>
 		</Dialog >
 	)
