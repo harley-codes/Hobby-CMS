@@ -4,6 +4,8 @@
 		"endregion",
 		"fontsource",
 		"linq",
+		"Luxon",
+		"Millis",
 		"NEXTAUTH",
 		"preact"
 	],

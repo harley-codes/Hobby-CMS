@@ -1,7 +1,8 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
 import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, ProjectDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, ProjectDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
+import { DateTime } from 'luxon'
 
 const projectDetailSelect = {
 	id: true,
@@ -146,12 +147,39 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: new Date(dataFile.date),
+			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,
 			hasThumbnail: dataFile.hasThumbnail,
 			meta: this.getPrismaJsonValue(dataFile.meta)
+		}
+	}
+
+	async getDataFilesPaginatedAsync(skip: number, take: number): Promise<DataFilesPaginatedResponse>
+	{
+		const sumPromise = this.prisma.file.count()
+
+		const dataFilePromise = this.prisma.file.findMany({
+			orderBy: {
+				date: 'desc'
+			},
+			select: {
+				id: true,
+				name: true,
+				hasThumbnail: true,
+				extension: true
+			},
+			skip,
+			take
+		})
+
+		const [sum, files] = await Promise.all([sumPromise, dataFilePromise])
+
+		return {
+			fileDetails: files,
+			totalFiles: sum,
+			request: { skip, take }
 		}
 	}
 
@@ -203,14 +231,16 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		const dataFile = await this.prisma.file.create({
 			data: {
 				...file,
-				date: new Date().getTime()
+				date: DateTime.utc().toMillis()
 			},
 		})
+
+
 
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: new Date(dataFile.date),
+			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,

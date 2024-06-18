@@ -5,11 +5,6 @@ import { createEvent } from '@/modules/custom-events/createEvent'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { useState } from 'react'
 
-type Props = {
-	currentProjectNames: string[]
-	onCreateProject: (name: string) => void
-}
-
 const newProjectRequestEvent = createEvent<null>('newProjectRequest')
 
 export const invokeNewProjectRequest = () => newProjectRequestEvent.callEvent(null)
@@ -19,6 +14,11 @@ const defaultState = {
 	name: '',
 	nameInUse: false,
 	process: false
+}
+
+type Props = {
+	currentProjectNames: string[]
+	onCreateProject: (name: string) => void
 }
 
 export function CreateProjectDialog(props: Props)

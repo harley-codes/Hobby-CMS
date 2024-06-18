@@ -1,5 +1,5 @@
 import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, ProjectDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, ProjectDetail } from '@/modules/database/responseTypes'
 
 export interface DatabaseClient {
 	// Project
@@ -18,4 +18,5 @@ export interface DatabaseClient {
 	getDataFileThumbnailAsync(fileId: string): Promise<string>;
 	createDataFileAsync(file: NewDataFile): Promise<DataFileDetails>;
 	deleteDataFileAsync(fileId: string): Promise<void>;
+	getDataFilesPaginatedAsync(skip: number, take: number): Promise<DataFilesPaginatedResponse>
 }

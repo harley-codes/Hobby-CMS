@@ -9,7 +9,7 @@ type LoadingEvent = {
 	textOverride?: string
 }
 
-let isLoadingModalMounted = false
+let isModalMounted = false
 
 const loadingEvent = createEvent<LoadingEvent>('loadingEvent')
 
@@ -26,14 +26,14 @@ export default function LoadingModal()
 
 	useEffect(() =>
 	{
-		if (isLoadingModalMounted)
+		if (isModalMounted)
 			throw new Error('Another LoadingModal is already mounted')
 
-		isLoadingModalMounted = true
+		isModalMounted = true
 
 		return () =>
 		{
-			isLoadingModalMounted = false
+			isModalMounted = false
 		}
 	}, [])
 
