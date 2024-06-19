@@ -18,8 +18,8 @@ export type PostModel = {
 	id: string
 	idProject: string
 	title: string
-	description: string
-	featuredImageURL: string
+	description: string | null
+	featuredImageURL: string | null
 	date: Date
 	blocks: Record<string, Record<string, string>>
 	meta: Record<string, string>

@@ -35,13 +35,16 @@
 		"editor.tabSize": 2
 	},
 	"[typescript]": {
-		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+		"editor.defaultFormatter": "vscode.typescript-language-features"
 	},
 	"[javascript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
 	"workbench.editor.labelFormat": "short",
 }

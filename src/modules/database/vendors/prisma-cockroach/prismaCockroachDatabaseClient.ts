@@ -1,9 +1,10 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
-import { NewDataFile, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, ProjectDetail } from '@/modules/database/responseTypes'
+import { NewDataFile, PostUpdateBlockValues, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 
+// #region Selectors
 const projectDetailSelect = {
 	id: true,
 	name: true,
@@ -17,6 +18,18 @@ const projectDetailSelect = {
 	}
 }
 
+const postDetailSelect = {
+	id: true,
+	title: true,
+	description: true,
+	featuredImageURL: true,
+	date: true,
+	meta: true,
+	tags: true,
+	status: true
+}
+// #endregion
+
 export class PrismaCockroachDatabaseClient implements DatabaseClient
 {
 	private prisma: PrismaClient
@@ -26,14 +39,14 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		this.prisma = new PrismaClient()
 	}
 
-	// #region Project
+	// #region Project Methods
 	async getProjectsAsync(): Promise<ProjectDetail[]>
 	{
 		const projects = await this.prisma.project.findMany({
 			select: projectDetailSelect
 		})
 
-		return projects.map(x => ({...x, meta: this.getPrismaJsonValue(x.meta)}))
+		return projects.map(x => ({ ...x, meta: this.getPrismaJsonValue(x.meta) }))
 	}
 
 	async createProjectAsync(name: string, isActive: boolean): Promise<ProjectDetail>
@@ -61,7 +74,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			select: projectDetailSelect
 		})
 
-		return {...project, meta: this.getPrismaJsonValue(project.meta)}
+		return { ...project, meta: this.getPrismaJsonValue(project.meta) }
 	}
 
 	async deleteProjectAsync(projectId: string): Promise<void>
@@ -85,11 +98,11 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			select: projectDetailSelect
 		})
 
-		return {...project, meta: this.getPrismaJsonValue(project.meta)}
+		return { ...project, meta: this.getPrismaJsonValue(project.meta) }
 	}
 	// #endregion
 
-	// #region Token
+	// #region Token Methods
 	async createAccessTokenAsync(projectId: string): Promise<AccessTokenDetail>
 	{
 		const token = await this.prisma.accessToken.create({
@@ -107,7 +120,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			}
 		})
 
-		return {...token, idProject: token.idProject!}
+		return { ...token, idProject: token.idProject! }
 	}
 
 	async deleteAccessTokenAsync(tokenId: string): Promise<void>
@@ -120,7 +133,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	}
 	// #endregion
 
-	// #region DataFile
+	// #region DataFile Methods
 	async getDataFileDetailsAsync(fileId: string): Promise<DataFileDetails>
 	{
 		const dataFile = await this.prisma.file.findUnique({
@@ -147,7 +160,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
+			date: DateTime.fromMillis(Number(dataFile.date), { zone: 'utc' }).toJSDate(),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,
@@ -240,7 +253,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return {
 			id: dataFile.id,
 			name: dataFile.name,
-			date: DateTime.fromMillis(Number(dataFile.date), {zone: 'utc'}).toJSDate(),
+			date: this.getDateFromBigint(dataFile.date),
 			mimeType: dataFile.mimeType,
 			extension: dataFile.extension,
 			sizeKb: dataFile.sizeKb,
@@ -259,8 +272,133 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	}
 	// #endregion
 
+	// #region Posts Methods
+	async getPostsAsync(): Promise<PostDetail[]>
+	{
+		const posts = await this.prisma.post.findMany({
+			select: postDetailSelect
+		})
+
+		return posts.map(x => ({
+			...x,
+			meta: this.getPrismaJsonValue(x.meta),
+			date: this.getDateFromBigint(x.date),
+			tags: this.getPrismaJsonValue<string[]>(x.tags)
+		}))
+	}
+
+	async getPostBlocksAsync(postId: string): Promise<PostBlocks>
+	{
+		const post = await this.prisma.post.findUnique({
+			where: {
+				id: postId
+			},
+			select: {
+				id: true,
+				blocks: true
+			}
+		})
+
+		if (!post)
+		{
+			throw new Error(`Post with id "${postId}" not found.`)
+		}
+
+		return {
+			...post,
+			blocks: this.getPrismaJsonValue<Record<string, Record<string, string>>>(post.blocks)
+		}
+	}
+
+	async createPostAsync(title: string): Promise<PostDetail>
+	{
+		const post = await this.prisma.post.create({
+			data: {
+				title,
+				date: DateTime.utc().toMillis(),
+				meta: {},
+				tags: [],
+				status: 'DISABLED',
+				blocks: {}
+			},
+			select: postDetailSelect
+		})
+
+		return {
+			...post,
+			meta: this.getPrismaJsonValue(post.meta),
+			date: this.getDateFromBigint(post.date),
+			tags: this.getPrismaJsonValue<string[]>(post.tags)
+		}
+	}
+
+	async deletePostAsync(postId: string): Promise<void>
+	{
+		await this.prisma.post.delete({
+			where: {
+				id: postId
+			}
+		})
+	}
+
+	async updatePostDetailsAsync(postId: string, values: PostUpdateDetailsValues): Promise<PostDetail>
+	{
+		const post = await this.prisma.post.update({
+			where: {
+				id: postId
+			},
+			data: {
+				...values,
+				date: values.date ? this.getBigintFromDate(values.date) : undefined,
+			},
+			select: postDetailSelect
+		})
+
+		return {
+			...post,
+			meta: this.getPrismaJsonValue(post.meta),
+			date: this.getDateFromBigint(post.date),
+			tags: this.getPrismaJsonValue<string[]>(post.tags)
+		}
+	}
+
+	async updatePostBlocksAsync(postId: string, values: PostUpdateBlockValues): Promise<PostBlocks>
+	{
+		const post = await this.prisma.post.update({
+			where: {
+				id: postId
+			},
+			data: {
+				blocks: values.blocks
+			},
+			select: {
+				id: true,
+				blocks: true
+			}
+		})
+
+		return {
+			...post,
+			blocks: this.getPrismaJsonValue<Record<string, Record<string, string>>>(post.blocks)
+		}
+
+	}
+	// #endregion
+
+	// #region Private Methods
+	private getBigintFromDate(date: Date): bigint
+	{
+		return BigInt(DateTime.fromJSDate(date, { zone: 'utc' }).toMillis())
+	}
+
+	private getDateFromBigint(date: bigint): Date
+	{
+		return DateTime.fromMillis(Number(date), { zone: 'utc' }).toJSDate()
+	}
+
 	private getPrismaJsonValue<T>(jsonValue: Prisma.JsonValue)
 	{
 		return (jsonValue?.valueOf() ?? {}) as T
 	}
+	// #endregion
 }
