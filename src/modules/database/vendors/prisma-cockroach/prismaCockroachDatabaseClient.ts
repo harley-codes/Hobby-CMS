@@ -1,6 +1,6 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
 import { NewDataFile, PostUpdateBlockValues, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 
@@ -40,13 +40,26 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	}
 
 	// #region Project Methods
-	async getProjectsAsync(): Promise<ProjectDetail[]>
+	async getProjectDetailsAsync(): Promise<ProjectDetail[]>
 	{
 		const projects = await this.prisma.project.findMany({
 			select: projectDetailSelect
 		})
 
 		return projects.map(x => ({ ...x, meta: this.getPrismaJsonValue(x.meta) }))
+	}
+
+	async getProjectListDetailsAsync(): Promise<ProjectListDetail[]>
+	{
+		const projects = await this.prisma.project.findMany({
+			select: {
+				id: true,
+				name: true,
+				active: true
+			}
+		})
+
+		return projects
 	}
 
 	async createProjectAsync(name: string, isActive: boolean): Promise<ProjectDetail>
@@ -273,10 +286,15 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	// #endregion
 
 	// #region Posts Methods
-	async getPostsAsync(): Promise<PostDetail[]>
+	async getPostsDetailsAsync(projectId?: string): Promise<PostDetail[]>
 	{
 		const posts = await this.prisma.post.findMany({
-			select: postDetailSelect
+			select: postDetailSelect,
+			where: !projectId ? {} : {
+				idProject: {
+					equals: projectId
+				}
+			}
 		})
 
 		return posts.map(x => ({
@@ -310,11 +328,12 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}
 	}
 
-	async createPostAsync(title: string): Promise<PostDetail>
+	async createPostAsync(title: string, projectId: string): Promise<PostDetail>
 	{
 		const post = await this.prisma.post.create({
 			data: {
 				title,
+				idProject: projectId,
 				date: DateTime.utc().toMillis(),
 				meta: {},
 				tags: [],

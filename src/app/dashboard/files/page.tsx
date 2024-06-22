@@ -3,7 +3,7 @@ import { NewFileButton } from '@/app/dashboard/files/_components/NewFileButton'
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { Stack, Typography } from '@mui/material'
 
-const getInitialFilesAsync = async () =>
+const getDataAsync = async () =>
 {
 	const client = await getDatabaseClientAsync()
 	const files = await client.getDataFilesPaginatedAsync(0, Number(process.env.PAGINATION_PAGE_SIZE))
@@ -12,7 +12,7 @@ const getInitialFilesAsync = async () =>
 
 export default async function FileManagerPage()
 {
-	const files = await getInitialFilesAsync()
+	const files = await getDataAsync()
 
 	return (
 		<Stack spacing={2}>

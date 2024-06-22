@@ -19,7 +19,7 @@ import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
 import { useCallback, useMemo, useState } from 'react'
 
-export function ProjectView(props: { projects: ProjectDetail[] })
+export function ProjectsListView(props: { projects: ProjectDetail[] })
 {
 	const [projects, setProjects] = useState(props.projects)
 	const [activeProject, setActiveProject] = useState<ProjectDetail | undefined>(projects[0])

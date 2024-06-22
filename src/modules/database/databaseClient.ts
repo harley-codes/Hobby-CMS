@@ -1,10 +1,11 @@
 import { NewDataFile, PostUpdateBlockValues, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
 
 export interface DatabaseClient
 {
 	// Project
-	getProjectsAsync(): Promise<ProjectDetail[]>
+	getProjectDetailsAsync(): Promise<ProjectDetail[]>
+	getProjectListDetailsAsync(): Promise<ProjectListDetail[]>
 	createProjectAsync(name: string, isActive: boolean): Promise<ProjectDetail>
 	deleteProjectAsync(projectId: string): Promise<void>
 	updateProjectAsync(projectId: string, values: ProjectUpdateValues): Promise<ProjectDetail>
@@ -22,9 +23,9 @@ export interface DatabaseClient
 	getDataFilesPaginatedAsync(skip: number, take: number): Promise<DataFilesPaginatedResponse>
 
 	// Posts
-	getPostsAsync(): Promise<PostDetail[]>
+	getPostsDetailsAsync(projectId?: string): Promise<PostDetail[]>
 	getPostBlocksAsync(postId: string): Promise<PostBlocks>
-	createPostAsync(title: string): Promise<PostDetail>
+	createPostAsync(title: string, projectId: string): Promise<PostDetail>
 	deletePostAsync(postId: string): Promise<void>
 	updatePostDetailsAsync(postId: string, values: PostUpdateDetailsValues): Promise<PostDetail>
 	updatePostBlocksAsync(postId: string, values: PostUpdateBlockValues): Promise<PostBlocks>

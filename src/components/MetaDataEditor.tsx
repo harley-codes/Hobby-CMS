@@ -149,6 +149,7 @@ export function MetaDataEditor(props: Props)
 								size="small"
 								value={newKeyTemp}
 								onChange={(e) => setNewKeyTemp(e.currentTarget.value)}
+								onKeyUp={(e) => e.key === 'Enter' && addKeyHandler()}
 							/>
 						</TableCell>
 						<TableCell>
