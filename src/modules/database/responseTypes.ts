@@ -45,7 +45,7 @@ export type PostDetail = Pick<PostModel,
 	'status'
 >
 
-export type PostBlocks = Pick<PostModel, 'id' | 'blocks'>
+export type PostBlockDetails = Pick<PostModel, 'id' | 'blocks'>
 
 export type PostUpdate = Pick<PostModel,
 	'id' |

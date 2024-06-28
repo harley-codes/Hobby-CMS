@@ -1,3 +1,4 @@
+
 export type ProjectModel = {
 	id: string
 	name: string
@@ -21,12 +22,20 @@ export type PostModel = {
 	description: string | null
 	featuredImageURL: string | null
 	date: Date
-	blocks: Record<string, Record<string, string>>
+	blocks: PostBlockList
 	meta: Record<string, string>
 	tags: string[]
 	status: PostStatus
 	project: ProjectModel | null
 }
+
+export type PostBlockList = PostBlockListItem[]
+export type PostBlockListItem = {
+	id: string
+	type: string
+	content: string
+	meta: Record<string, string>
+} & Record<string, any>
 
 export type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'
 
