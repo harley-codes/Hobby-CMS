@@ -1,3 +1,5 @@
+'use client'
+
 import { TagsInput } from '@/app/dashboard/posts/_components/TagsInput'
 import DatePicker from '@/components/DatePicker'
 import { ImageBox } from '@/components/ImageBox'
@@ -11,7 +13,8 @@ import
 	ExpandMore as ExpandMoreIcon,
 	Image as ImageIcon,
 	Restore as RestoreIcon,
-	Save as SaveIcon
+	Save as SaveIcon,
+	Subject as SubjectIcon
 } from '@mui/icons-material'
 import
 {
@@ -40,7 +43,8 @@ type Props = {
 	savePost: () => void
 	deletePost: () => void
 	discardChanges: () => void
-	setActivePost: (postId: string) => void
+	setActivePost: () => void
+	loadContentRequest: () => void
 }
 
 export function PostListItem(props: Props)
@@ -53,7 +57,8 @@ export function PostListItem(props: Props)
 		savePost,
 		deletePost,
 		discardChanges,
-		setActivePost
+		setActivePost,
+		loadContentRequest
 	} = props
 
 	const [metaDataValid, setMetaDataValid] = useState(true)
@@ -63,7 +68,7 @@ export function PostListItem(props: Props)
 	return (
 		<Accordion
 			expanded={expanded}
-			onChange={() => setActivePost(post.id)}
+			onChange={setActivePost}
 		>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography variant="h6">{post.title}</Typography>
@@ -139,15 +144,18 @@ export function PostListItem(props: Props)
 
 			<AccordionActions>
 				<Stack width="100%" padding={1} direction="row" gap={2} display="flex" justifyContent="space-between">
-					<Button variant="outlined" color="warning" onClick={deletePost} endIcon={<DeleteIcon />}>
+					{detailsChangePending && <Button variant="outlined" color="warning" onClick={discardChanges} endIcon={<RestoreIcon />}>
+						Discard Changes
+					</Button>}
+					{!detailsChangePending && <Button variant="outlined" color="warning" onClick={deletePost} endIcon={<DeleteIcon />}>
 						Delete
-					</Button>
+					</Button>}
 					<Box margin="auto" />
-					<Button disabled={!detailsChangePending} variant="outlined" onClick={discardChanges} endIcon={<RestoreIcon />}>
-						Discard
-					</Button>
 					<Button disabled={!detailsChangePending || !metaDataValid} variant="outlined" onClick={savePost} endIcon={<SaveIcon />}>
 						Save
+					</Button>
+					<Button variant="outlined" onClick={loadContentRequest} endIcon={<SubjectIcon />}>
+						Edit Content
 					</Button>
 				</Stack>
 			</AccordionActions>

@@ -1,6 +1,7 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
-import { NewDataFile, PostUpdateBlockValues, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlocks, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
+import { PostBlockList } from '@/modules/database/models'
+import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 
@@ -305,7 +306,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}))
 	}
 
-	async getPostBlocksAsync(postId: string): Promise<PostBlocks>
+	async getPostBlocksAsync(postId: string): Promise<PostBlockDetails>
 	{
 		const post = await this.prisma.post.findUnique({
 			where: {
@@ -324,7 +325,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 		return {
 			...post,
-			blocks: this.getPrismaJsonValue<Record<string, Record<string, string>>>(post.blocks)
+			blocks: this.getPrismaJsonValue<PostBlockList>(post.blocks)
 		}
 	}
 
@@ -381,14 +382,14 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}
 	}
 
-	async updatePostBlocksAsync(postId: string, values: PostUpdateBlockValues): Promise<PostBlocks>
+	async updatePostBlocksAsync(postId: string, values: PostBlockList): Promise<PostBlockDetails>
 	{
 		const post = await this.prisma.post.update({
 			where: {
 				id: postId
 			},
 			data: {
-				blocks: values.blocks
+				blocks: values
 			},
 			select: {
 				id: true,
@@ -398,7 +399,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 		return {
 			...post,
-			blocks: this.getPrismaJsonValue<Record<string, Record<string, string>>>(post.blocks)
+			blocks: this.getPrismaJsonValue<PostBlockList>(post.blocks)
 		}
 
 	}

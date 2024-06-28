@@ -1,8 +1,9 @@
 'use server'
 
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
-import { PostUpdateBlockValues, PostUpdateDetailsValues } from '@/modules/database/requestTypes'
-import { PostBlocks, PostDetail } from '@/modules/database/responseTypes'
+import { PostBlockList } from '@/modules/database/models'
+import { PostUpdateDetailsValues } from '@/modules/database/requestTypes'
+import { PostBlockDetails, PostDetail } from '@/modules/database/responseTypes'
 
 export async function createPostServerAction(postName: string, projectId: string): Promise<PostDetail>
 {
@@ -18,7 +19,7 @@ export async function updatePostServerAction(postId: string, values: PostUpdateD
 	return post
 }
 
-export async function updatePostBlocksServerAction(postId: string, values: PostUpdateBlockValues): Promise<PostBlocks>
+export async function updatePostBlocksServerAction(postId: string, values: PostBlockList): Promise<PostBlockDetails>
 {
 	const client = await getDatabaseClientAsync()
 	const blocks = await client.updatePostBlocksAsync(postId, values)
@@ -29,4 +30,11 @@ export async function deletePostServerAction(postId: string): Promise<void>
 {
 	const client = await getDatabaseClientAsync()
 	await client.deletePostAsync(postId)
+}
+
+export async function getPostContentServerAction(postId: string): Promise<PostBlockDetails>
+{
+	const client = await getDatabaseClientAsync()
+	const blocks = await client.getPostBlocksAsync(postId)
+	return blocks
 }

@@ -1,10 +1,12 @@
 'use client'
 
-import { createPostServerAction, deletePostServerAction, updatePostServerAction } from '@/app/dashboard/_actions/postActions'
+import { createPostServerAction, deletePostServerAction, getPostContentServerAction, updatePostBlocksServerAction, updatePostServerAction } from '@/app/dashboard/_actions/postActions'
 import { CreatePostDialog } from '@/app/dashboard/posts/_components/CreatePostDialog'
+import { PostContentEditDialog, invokePostContentEditRequest } from '@/app/dashboard/posts/_components/PostContentEditDialog'
 import { PostListItem } from '@/app/dashboard/posts/_components/PostListItem'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { invokeLoadingModal } from '@/components/LoadingModal'
+import { PostBlockList } from '@/modules/database/models'
 import { PostUpdateDetailsValues } from '@/modules/database/requestTypes'
 import { PostDetail, ProjectListDetail } from '@/modules/database/responseTypes'
 import { useCallback, useMemo, useState } from 'react'
@@ -151,6 +153,31 @@ export function PostsListView(props: Props)
 		}
 	}
 
+	async function loadContentRequestHandler()
+	{
+		if (!activePost) return
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Loading Content' })
+		invokeLoading(true)
+		{
+			const content = await getPostContentServerAction(activePost.id)
+			invokePostContentEditRequest({ postName: activePost.title, postBlocks: content.blocks })
+		}
+		invokeLoading(false)
+	}
+
+	async function savePostBlocksHandler(data: PostBlockList)
+	{
+		if (!activePost) return
+
+		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Saving Blocks' })
+		invokeLoading(true)
+		{
+			await updatePostBlocksServerAction(activePost.id, data)
+		}
+		invokeLoading(false)
+	}
+
 	return (
 		<div>
 			{posts.map(post => (
@@ -163,10 +190,12 @@ export function PostsListView(props: Props)
 					savePost={saveActivePostHandler}
 					deletePost={deleteActivePostHandler}
 					discardChanges={discardActivePostChangesHandler}
-					setActivePost={setActivePostHandler}
+					setActivePost={() => setActivePostHandler(post.id)}
+					loadContentRequest={loadContentRequestHandler}
 				/>
 			))}
 
+			<PostContentEditDialog onSave={savePostBlocksHandler} />
 			<CreatePostDialog currentPostNames={postNames} projects={props.projects} onCreatePost={createPostHandler} />
 		</div>
 	)
