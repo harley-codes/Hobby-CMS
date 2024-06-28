@@ -13,12 +13,12 @@ export namespace BlockEditors
 	export enum BlockTypes
 	{
 		RichText = 'RichText',
-		HeaderText = 'HeaderText'
+		HeaderText = 'HeaderText',
+		BodyText = 'BodyText'
 	}
 
 	export const BlockTypesArray: BlockTypes[] = [
-		BlockTypes.RichText,
-		BlockTypes.HeaderText
+		...Object.values(BlockTypes),
 	]
 
 	export interface Props
@@ -39,9 +39,29 @@ export namespace BlockEditors
 				return <EditorWysiwyg data={componentProps.data} onDataChange={componentProps.onDataChange} />
 			case BlockTypes.HeaderText:
 				return <EditorHeaderText data={componentProps.data} onDataChange={componentProps.onDataChange} />
+			case BlockTypes.BodyText:
+				return <EditorBodyText data={componentProps.data} onDataChange={componentProps.onDataChange} />
 			default:
 				return <div>Error: {componentType} has not yet been configured.</div>
 		}
+	}
+
+	function EditorBodyText({ data, onDataChange }: Props)
+	{
+		return (
+			<TextField
+				value={data.content ?? ''}
+				onChange={(e) => onDataChange({ ...data, content: e.target.value })}
+				multiline
+				minRows={5}
+				fullWidth
+				sx={{
+					'& .MuiOutlinedInput-notchedOutline': {
+						borderRadius: 1
+					}
+				}}
+			/>
+		)
 	}
 
 	function EditorHeaderText({ data, onDataChange }: Props)

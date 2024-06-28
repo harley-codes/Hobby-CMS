@@ -97,6 +97,11 @@ export function PostContentEditDialog(props: Props)
 				newBlock.content = ''
 				newBlock.format = 'h4'
 				break
+			case BlockEditors.BlockTypes.BodyText:
+				newBlock.id = newId
+				newBlock.type = BlockEditors.BlockTypes.BodyText
+				newBlock.content = ''
+				break
 			default:
 				throw new Error('Cannot add block, type not configured')
 		}
