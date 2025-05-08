@@ -77,11 +77,11 @@ export function ProjectListItem(props: Props)
 						deleteToken={deleteToken}
 					/>
 
-					<MetaDataEditor
+					{expanded && <MetaDataEditor
 						meta={project.meta ?? {}}
 						onMetaChange={(data) => updateDetail({ meta: data })}
 						onDataValidation={(isValid) => setMetaDataValid(isValid)}
-					/>
+					/>}
 				</Stack>
 			</AccordionDetails>
 
