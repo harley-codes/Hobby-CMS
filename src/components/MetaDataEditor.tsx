@@ -45,19 +45,36 @@ export function MetaDataEditor(props: Props)
 {
 	const { meta, onMetaChange, onDataValidation } = props
 
+	const [syncedMeta, setSyncedMeta] = useState(meta)
 	const [workingSet, setWorkingSet] = useState(recordToArray(meta))
 	const [newKeyTemp, setNewKeyTemp] = useState('')
 
+	/*
+	 * Sync the working set with the meta data
+	 * If the meta data is changed from upstream, update the working set
+	 * If the working set is changed, update the meta data to upstream
+	*/
 	useEffect(() =>
 	{
-		if (JSON.stringify(recordToArray(meta)) === JSON.stringify(workingSet)) return
-
+		const isMetaEqualToWorkingSet = JSON.stringify(recordToArray(meta)) === JSON.stringify(workingSet)
+		const isMetaEqualToSyncedMeta = JSON.stringify(meta) === JSON.stringify(syncedMeta)
 		const isValid = allKeysValid()
 
-		if (isValid)
-			onMetaChange(Object.fromEntries(workingSet.map(item => [item.key, item.value])))
+		if (!isMetaEqualToWorkingSet && isMetaEqualToSyncedMeta && isValid)
+		{
+			const data = Object.fromEntries(workingSet.map(item => [item.key, item.value]))
+			onMetaChange(data)
+			setSyncedMeta(data)
+		}
+
+		if (!isMetaEqualToSyncedMeta)
+		{
+			setWorkingSet(recordToArray(meta))
+			setSyncedMeta(meta)
+		}
 
 		onDataValidation(isValid)
+		setNewKeyTemp('')
 
 		function allKeysValid(): boolean
 		{
@@ -65,7 +82,7 @@ export function MetaDataEditor(props: Props)
 			const uniqueKeys = new Set(keys)
 			return keys.length === uniqueKeys.size && !keys.some(key => key === '')
 		}
-	}, [meta, onDataValidation, onMetaChange, workingSet])
+	}, [meta, workingSet, syncedMeta, onMetaChange, onDataValidation])
 
 	function isKeyInvalid(key: string)
 	{
