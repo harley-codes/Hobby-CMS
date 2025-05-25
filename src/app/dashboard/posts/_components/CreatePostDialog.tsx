@@ -3,7 +3,7 @@
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { invokeMessageAlertModal } from '@/components/MessageAlertModal'
 import { createEvent } from '@/modules/custom-events/createEvent'
-import { ProjectListDetail } from '@/modules/database/responseTypes'
+import { ProjectReferenceDetail } from '@/modules/database/responseTypes'
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 
@@ -15,15 +15,14 @@ const defaultState = {
 	display: false,
 	name: '',
 	nameInUse: false,
-	projectId: '',
-	projectSelected: false,
+	projectIds: [] as string[],
 	process: false
 }
 
 type Props = {
 	currentPostNames: string[]
-	projects: ProjectListDetail[]
-	onCreatePost: (name: string, projectId: string) => void
+	projects: ProjectReferenceDetail[]
+	onCreatePost: (name: string, projectIds: string[]) => void
 }
 
 export function CreatePostDialog(props: Props)
@@ -46,12 +45,11 @@ export function CreatePostDialog(props: Props)
 		})
 	}
 
-	function setProjectHandler(e: SelectChangeEvent<string>)
+	function setProjectHandler(e: SelectChangeEvent<string[]>)
 	{
 		setState({
 			...state,
-			projectId: e.target.value,
-			projectSelected: !!e.target.value
+			projectIds: e.target.value as string[]
 		})
 	}
 
@@ -73,15 +71,6 @@ export function CreatePostDialog(props: Props)
 			return
 		}
 
-		if (!state.projectSelected)
-		{
-			invokeMessageAlertModal({
-				title: 'Missing Project',
-				description: 'You must choose a project first.',
-			})
-			return
-		}
-
 		invokeConfirmationModal({
 			description: `Are you sure you want to create a post named "${state.name}"?`,
 			onConfirmed: (confirmed) =>
@@ -96,7 +85,7 @@ export function CreatePostDialog(props: Props)
 
 	function exitHandler()
 	{
-		if (state.process) onCreatePost(state.name, state.projectId)
+		if (state.process) onCreatePost(state.name, state.projectIds)
 		setState(defaultState)
 	}
 
@@ -106,7 +95,7 @@ export function CreatePostDialog(props: Props)
 			TransitionProps={{
 				onExited: exitHandler,
 			}}
-			fullWidth maxWidth="xs"
+			fullWidth maxWidth="md"
 		>
 			<DialogTitle>Create Post</DialogTitle>
 			<DialogContent>
@@ -120,12 +109,14 @@ export function CreatePostDialog(props: Props)
 					helperText={state.nameInUse ? 'Name already in use' : ' '}
 				/>
 				<FormControl fullWidth>
-					<InputLabel>Assign Project</InputLabel>
+					<InputLabel>Assign Projects</InputLabel>
 					<Select
-						label="Project Status"
-						value={projects.find(x => x.id === state.projectId)?.id}
+						label="Assign Projects"
+						value={projects.filter(x => state.projectIds.includes(x.id)).map(x => x.id)}
 						onChange={setProjectHandler}
 						fullWidth
+						multiple
+						renderValue={(selected) => projects.filter(x => selected.includes(x.id)).map(x => x.name).join(', ')}
 					>
 						{projects.map(({ id, name, active }) => (
 							<MenuItem key={id} value={id}>

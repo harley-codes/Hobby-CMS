@@ -1,12 +1,12 @@
 import { PostBlockList } from '@/modules/database/models'
 import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectReferenceDetail } from '@/modules/database/responseTypes'
 
 export interface DatabaseClient
 {
 	// Project
 	getProjectDetailsAsync(): Promise<ProjectDetail[]>
-	getProjectListDetailsAsync(): Promise<ProjectListDetail[]>
+	getProjectListDetailsAsync(): Promise<ProjectReferenceDetail[]>
 	createProjectAsync(name: string, isActive: boolean): Promise<ProjectDetail>
 	deleteProjectAsync(projectId: string): Promise<void>
 	updateProjectAsync(projectId: string, values: ProjectUpdateValues): Promise<ProjectDetail>
@@ -26,7 +26,7 @@ export interface DatabaseClient
 	// Posts
 	getPostsDetailsAsync(projectId?: string): Promise<PostDetail[]>
 	getPostBlocksAsync(postId: string): Promise<PostBlockDetails>
-	createPostAsync(title: string, projectId: string): Promise<PostDetail>
+	createPostAsync(title: string, projectIds: string[]): Promise<PostDetail>
 	deletePostAsync(postId: string): Promise<void>
 	updatePostDetailsAsync(postId: string, values: PostUpdateDetailsValues): Promise<PostDetail>
 	updatePostBlocksAsync(postId: string, values: PostBlockList): Promise<PostBlockDetails>

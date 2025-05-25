@@ -26,7 +26,7 @@ export type PostModel = {
 	meta: Record<string, string>
 	tags: string[]
 	status: PostStatus
-	project: ProjectModel | null
+	projects: ProjectModel[]
 }
 
 export type PostBlockList = PostBlockListItem[]
