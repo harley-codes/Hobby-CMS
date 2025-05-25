@@ -1,6 +1,6 @@
 import { AccessTokenModel, FileModel, PostModel, ProjectModel } from '@/modules/database/models'
 
-export type ProjectDetail = Pick<ProjectModel, 'id' | 'name' | 'active' | 'meta'> & {
+export type ProjectDetail = Pick<ProjectModel, 'id' | 'name' | 'active' | 'meta' | 'description' | 'featuredImageURL'> & {
 	accessTokens: Pick<AccessTokenModel, 'id' | 'token'>[]
 }
 

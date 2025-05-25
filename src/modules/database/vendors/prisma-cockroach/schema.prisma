@@ -8,13 +8,15 @@ datasource db {
 }
 
 model Project {
-    id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    name         String        @db.String()
-    active       Boolean       @db.Bool
-    meta         Json          @db.JsonB
+    id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name             String        @db.String()
+    description      String?       @db.String()
+    featuredImageURL String?       @db.String()
+    active           Boolean       @db.Bool
+    meta             Json          @db.JsonB
     // Relational
-    posts        Post[]
-    accessTokens AccessToken[]
+    posts            Post[]
+    accessTokens     AccessToken[]
 }
 
 model AccessToken {
@@ -37,7 +39,7 @@ model Post {
     tags             Json       @db.JsonB
     status           PostStatus
     // Relational
-    projects        Project[]
+    projects         Project[]
 }
 
 enum PostStatus {
