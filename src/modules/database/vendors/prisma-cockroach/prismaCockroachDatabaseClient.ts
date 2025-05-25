@@ -16,7 +16,9 @@ const projectDetailSelect = {
 			id: true,
 			token: true
 		}
-	}
+	},
+	description: true,
+	featuredImageURL: true
 }
 
 const postDetailSelect = {

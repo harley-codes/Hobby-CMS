@@ -1,6 +1,7 @@
 'use client'
 
 import { TokenList } from '@/app/dashboard/projects/_components/TokenList'
+import { FeaturedImageInput } from '@/components/FeaturedImageInput'
 import { MetaDataEditor } from '@/components/MetaDataEditor'
 import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
@@ -10,8 +11,8 @@ import
 	ExpandMore as ExpandMoreIcon,
 	Save as SaveIcon
 } from '@mui/icons-material'
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
+import { useRef, useState } from 'react'
 
 type Props = {
 	project: ProjectDetail
@@ -40,6 +41,8 @@ export function ProjectListItem(props: Props)
 	} = props
 
 	const [metaDataValid, setMetaDataValid] = useState(true)
+
+	const descriptionRef = useRef<HTMLInputElement>(null)
 
 	return (
 		<Accordion
@@ -70,6 +73,31 @@ export function ProjectListItem(props: Props)
 							<MenuItem value="Enabled">Enabled</MenuItem>
 						</Select>
 					</FormControl>
+
+					<Box>
+						<Grid container spacing={2}>
+							<Grid item xs={12} md={6}>
+								<Stack spacing={2}>
+									<TextField
+										label="Project Description"
+										value={project.description ?? ''}
+										onChange={(e) => updateDetail({ description: e.currentTarget.value })}
+										multiline
+										inputProps={{ maxLength: 500 }}
+										minRows={8}
+										ref={descriptionRef}
+									/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} md={6}>
+								<FeaturedImageInput
+									featuredImageURL={project.featuredImageURL ?? ''}
+									onChange={(value) => updateDetail({ featuredImageURL: value })}
+									forcedHeight={descriptionRef.current?.offsetHeight}
+								/>
+							</Grid>
+						</Grid>
+					</Box>
 
 					<TokenList
 						accessTokens={project.accessTokens}

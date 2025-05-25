@@ -34,7 +34,9 @@ export function ProjectsListView(props: { projects: ProjectDetail[] })
 		const details = (project: ProjectDetail) => JSON.stringify({
 			name: project.name,
 			active: project.active,
-			meta: project.meta
+			meta: project.meta,
+			description: project.description,
+			featuredImageURL: project.featuredImageURL,
 		})
 
 		return details(activeProject) !== details(originalProject)
@@ -93,6 +95,8 @@ export function ProjectsListView(props: { projects: ProjectDetail[] })
 				name: activeProject.name,
 				active: activeProject.active,
 				meta: activeProject.meta,
+				description: activeProject.description,
+				featuredImageURL: activeProject.featuredImageURL
 			})
 
 			setProjects(projects.map(project =>

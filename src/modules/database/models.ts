@@ -2,6 +2,8 @@
 export type ProjectModel = {
 	id: string
 	name: string
+	description: string | null
+	featuredImageURL: string | null
 	active: boolean
 	meta: Record<string, string>
 	posts: PostModel[]
