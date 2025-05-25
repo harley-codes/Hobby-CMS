@@ -8,12 +8,12 @@ import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { invokeLoadingModal } from '@/components/LoadingModal'
 import { PostBlockList } from '@/modules/database/models'
 import { PostUpdateDetailsValues } from '@/modules/database/requestTypes'
-import { PostDetail, ProjectListDetail } from '@/modules/database/responseTypes'
+import { PostDetail, ProjectReferenceDetail } from '@/modules/database/responseTypes'
 import { useCallback, useMemo, useState } from 'react'
 
 type Props = {
 	posts: PostDetail[]
-	projects: ProjectListDetail[]
+	projects: ProjectReferenceDetail[]
 }
 
 export function PostsListView(props: Props)
@@ -37,7 +37,10 @@ export function PostsListView(props: Props)
 			date: post.date,
 			meta: post.meta,
 			tags: post.tags,
-			status: post.status
+			status: post.status,
+			// CHECK BEFORE COMMITTING
+			projects: post.projects.map(p => ({ id: p.id }))
+			// projects: props.projects.filter(p => post.projects.some(pr => pr.id === p.id))
 		})
 
 		return details(activePost) !== details(originalPost)
@@ -57,7 +60,14 @@ export function PostsListView(props: Props)
 	{
 		if (!activePost) return
 
-		const updatedPost = { ...activePost, ...values }
+		const updatedPost = {
+			...activePost,
+			...values,
+			projects: values.projects
+				? props.projects.filter(x => values.projects?.some(p => p.id === x.id))
+				: activePost.projects
+		}
+
 		setActivePost(updatedPost)
 	}
 
@@ -79,13 +89,13 @@ export function PostsListView(props: Props)
 		}
 	}
 
-	async function createPostHandler(newName: string, projectId: string)
+	async function createPostHandler(newName: string, projectIds: string[])
 	{
 		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Creating Post' })
 
 		invokeLoading(true)
 		{
-			const newPost = await createPostServerAction(newName, projectId)
+			const newPost = await createPostServerAction(newName, projectIds)
 			setPosts([newPost, ...posts])
 			setActivePost(newPost)
 		}
@@ -116,7 +126,8 @@ export function PostsListView(props: Props)
 				date: activePost.date,
 				meta: activePost.meta,
 				tags: activePost.tags,
-				status: activePost.status
+				status: activePost.status,
+				projects: activePost.projects.map(p => ({ id: p.id })),
 			})
 
 			setPosts(posts.map(post =>
@@ -184,6 +195,7 @@ export function PostsListView(props: Props)
 				<PostListItem
 					key={post.id}
 					post={checkPostIsActive(post.id) ? activePost! : post}
+					projectOptions={props.projects}
 					expanded={checkPostIsActive(post.id)}
 					detailsChangePending={checkPostIsActive(post.id) && hasActivePostDetailsChanged}
 					updateDetail={updateActivePostHandler}

@@ -4,7 +4,7 @@ export type ProjectDetail = Pick<ProjectModel, 'id' | 'name' | 'active' | 'meta'
 	accessTokens: Pick<AccessTokenModel, 'id' | 'token'>[]
 }
 
-export type ProjectListDetail = Pick<ProjectModel, 'id' | 'name' | 'active'>
+export type ProjectReferenceDetail = Pick<ProjectModel, 'id' | 'name' | 'active'>
 
 export type AccessTokenDetail = Pick<AccessTokenModel,
 	'id' |
@@ -43,7 +43,10 @@ export type PostDetail = Pick<PostModel,
 	'meta' |
 	'tags' |
 	'status'
->
+> &
+{
+	projects: Pick<ProjectModel, 'id' | 'name' | 'active'>[]
+}
 
 export type PostBlockDetails = Pick<PostModel, 'id' | 'blocks'>
 

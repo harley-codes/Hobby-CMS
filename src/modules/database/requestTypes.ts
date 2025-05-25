@@ -25,6 +25,9 @@ export type PostUpdateDetailsValues = {
 		'tags' |
 		'status'
 	>]?: PostModel[K]
+} &
+{
+	projects?: Pick<ProjectModel, 'id'>[]
 }
 
 export type PostUpdateBlockValues = Pick<PostModel,

@@ -6,7 +6,7 @@ import { ImageBox } from '@/components/ImageBox'
 import { MetaDataEditor } from '@/components/MetaDataEditor'
 import { PostStatus } from '@/modules/database/models'
 import { PostUpdateDetailsValues } from '@/modules/database/requestTypes'
-import { PostDetail } from '@/modules/database/responseTypes'
+import { PostDetail, ProjectReferenceDetail } from '@/modules/database/responseTypes'
 import
 {
 	Delete as DeleteIcon,
@@ -24,6 +24,7 @@ import
 	AccordionSummary,
 	Box,
 	Button,
+	Chip,
 	FormControl,
 	Grid,
 	InputLabel,
@@ -37,6 +38,7 @@ import { useRef, useState } from 'react'
 
 type Props = {
 	post: PostDetail
+	projectOptions: ProjectReferenceDetail[]
 	expanded: boolean
 	detailsChangePending: boolean
 	updateDetail: (values: PostUpdateDetailsValues) => void
@@ -51,6 +53,7 @@ export function PostListItem(props: Props)
 {
 	const {
 		post,
+		projectOptions,
 		expanded,
 		detailsChangePending,
 		updateDetail,
@@ -106,6 +109,36 @@ export function PostListItem(props: Props)
 							</Select>
 						</FormControl>
 					</Stack>
+
+					<FormControl fullWidth>
+						<InputLabel>Assign Projects</InputLabel>
+						<Select
+							label="Assign Projects"
+							value={projectOptions.filter(x => post.projects.some(p => p.id === x.id)).map(x => x.id)}
+							onChange={(e) => updateDetail({
+								projects: projectOptions.filter(p => e.target.value.includes(p.id))
+							})}
+							fullWidth
+							multiple
+							renderValue={(selected) => projectOptions.filter(x => selected.includes(x.id)).map(x => x.name).join(', ')}
+						>
+							{projectOptions.map(({ id, name, active }) => (
+								<MenuItem key={id} value={id}>
+									<Stack direction="row" spacing={2} justifyContent="space-between" width="100%">
+										<Typography variant="inherit">{name}</Typography>
+										<Chip label="active" size="small" {...(active ? {
+											color: 'success',
+											variant: 'outlined'
+										} : {
+											color: 'warning',
+											variant: 'outlined'
+										})} />
+									</Stack>
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+
 					<Box>
 						<Grid container spacing={2}>
 							<Grid item xs={12} md={6}>

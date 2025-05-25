@@ -37,7 +37,7 @@ model Post {
     tags             Json       @db.JsonB
     status           PostStatus
     // Relational
-    project          Project?   @relation(fields: [idProject], references: [id])
+    projects        Project[]
 }
 
 enum PostStatus {

@@ -1,7 +1,7 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
 import { PostBlockList } from '@/modules/database/models'
 import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectListDetail } from '@/modules/database/responseTypes'
+import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectReferenceDetail } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 
@@ -27,7 +27,8 @@ const postDetailSelect = {
 	date: true,
 	meta: true,
 	tags: true,
-	status: true
+	status: true,
+	projects: true
 }
 // #endregion
 
@@ -50,7 +51,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return projects.map(x => ({ ...x, meta: this.getPrismaJsonValue(x.meta) }))
 	}
 
-	async getProjectListDetailsAsync(): Promise<ProjectListDetail[]>
+	async getProjectListDetailsAsync(): Promise<ProjectReferenceDetail[]>
 	{
 		const projects = await this.prisma.project.findMany({
 			select: {
@@ -302,7 +303,12 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			...x,
 			meta: this.getPrismaJsonValue(x.meta),
 			date: this.getDateFromBigint(x.date),
-			tags: this.getPrismaJsonValue<string[]>(x.tags)
+			tags: this.getPrismaJsonValue<string[]>(x.tags),
+			projects: x.projects.map(p => ({
+				id: p.id,
+				name: p.name,
+				active: p.active
+			}))
 		}))
 	}
 
@@ -329,17 +335,19 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}
 	}
 
-	async createPostAsync(title: string, projectId: string): Promise<PostDetail>
+	async createPostAsync(title: string, projectIds: string[]): Promise<PostDetail>
 	{
 		const post = await this.prisma.post.create({
 			data: {
 				title,
-				idProject: projectId,
 				date: DateTime.utc().toMillis(),
 				meta: {},
 				tags: [],
 				status: 'DISABLED',
-				blocks: {}
+				blocks: {},
+				projects: {
+					connect: projectIds.map(id => ({ id }))
+				}
 			},
 			select: postDetailSelect
 		})
@@ -348,7 +356,12 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			...post,
 			meta: this.getPrismaJsonValue(post.meta),
 			date: this.getDateFromBigint(post.date),
-			tags: this.getPrismaJsonValue<string[]>(post.tags)
+			tags: this.getPrismaJsonValue<string[]>(post.tags),
+			projects: post.projects.map(p => ({
+				id: p.id,
+				name: p.name,
+				active: p.active
+			}))
 		}
 	}
 
@@ -363,6 +376,8 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 	async updatePostDetailsAsync(postId: string, values: PostUpdateDetailsValues): Promise<PostDetail>
 	{
+
+
 		const post = await this.prisma.post.update({
 			where: {
 				id: postId
@@ -370,6 +385,9 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			data: {
 				...values,
 				date: values.date ? this.getBigintFromDate(values.date) : undefined,
+				projects: {
+					set: values.projects?.map(p => ({ id: p.id })) ?? []
+				}
 			},
 			select: postDetailSelect
 		})
@@ -378,7 +396,12 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			...post,
 			meta: this.getPrismaJsonValue(post.meta),
 			date: this.getDateFromBigint(post.date),
-			tags: this.getPrismaJsonValue<string[]>(post.tags)
+			tags: this.getPrismaJsonValue<string[]>(post.tags),
+			projects: post.projects.map(p => ({
+				id: p.id,
+				name: p.name,
+				active: p.active
+			}))
 		}
 	}
 

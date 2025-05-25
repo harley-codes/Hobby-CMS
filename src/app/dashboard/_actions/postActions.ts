@@ -5,10 +5,10 @@ import { PostBlockList } from '@/modules/database/models'
 import { PostUpdateDetailsValues } from '@/modules/database/requestTypes'
 import { PostBlockDetails, PostDetail } from '@/modules/database/responseTypes'
 
-export async function createPostServerAction(postName: string, projectId: string): Promise<PostDetail>
+export async function createPostServerAction(postName: string, projectIds: string[]): Promise<PostDetail>
 {
 	const client = await getDatabaseClientAsync()
-	const post = await client.createPostAsync(postName, projectId)
+	const post = await client.createPostAsync(postName, projectIds)
 	return post
 }
 
