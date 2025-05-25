@@ -47,5 +47,10 @@
 	"[javascriptreact]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
 	"workbench.editor.labelFormat": "short",
+	"editor.defaultFormatter": null,
+	"editor.detectIndentation": false,
 }
