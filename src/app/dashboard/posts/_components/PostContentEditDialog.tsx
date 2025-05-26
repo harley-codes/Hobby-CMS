@@ -1,17 +1,15 @@
 'use client'
 
-import { BlockEditors } from '@/app/dashboard/posts/_components/PostBlockEditors'
+import { BlockEditorFactory } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorFactory'
+import { PostBlockTypes, PostBlockTypesArray } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorTypes'
 import { SortingControls } from '@/app/dashboard/posts/_components/SortingControls'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { createEvent } from '@/modules/custom-events/createEvent'
 import { PostBlockList, PostBlockListItem } from '@/modules/database/models'
-import
-{
-	Add as AddIcon
-} from '@mui/icons-material'
+import { Add as AddIcon } from '@mui/icons-material'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { v4 as CreateUID } from 'uuid'
+
 type EventData = {
 	postName: string
 	postBlocks: PostBlockList
@@ -38,7 +36,7 @@ export function PostContentEditDialog(props: Props)
 
 	const [state, setState] = useState(defaultState)
 
-	const [newBlockType, setNewBlockType] = useState(BlockEditors.BlockTypes.RichText)
+	const [newBlockType, setNewBlockType] = useState(PostBlockTypes.RichText)
 
 	const blockCount = Object.keys(state.postBlocks).length
 
@@ -51,6 +49,11 @@ export function PostContentEditDialog(props: Props)
 			postBlocks: data.postBlocks,
 		})
 	})
+
+	function camelCaseToWords(str: string): string
+	{
+		return str.replace(/([A-Z])/g, ' $1').trim()
+	}
 
 	function cancelHandler()
 	{
@@ -82,30 +85,7 @@ export function PostContentEditDialog(props: Props)
 
 	function onBlockAddHandler()
 	{
-		const newBlock = {} as PostBlockListItem
-		const newId = CreateUID()
-		switch (newBlockType)
-		{
-			case BlockEditors.BlockTypes.RichText:
-				newBlock.id = newId
-				newBlock.type = BlockEditors.BlockTypes.RichText
-				newBlock.content = ''
-				break
-			case BlockEditors.BlockTypes.HeaderText:
-				newBlock.id = newId
-				newBlock.type = BlockEditors.BlockTypes.HeaderText
-				newBlock.content = ''
-				newBlock.format = 'h4'
-				break
-			case BlockEditors.BlockTypes.BodyText:
-				newBlock.id = newId
-				newBlock.type = BlockEditors.BlockTypes.BodyText
-				newBlock.content = ''
-				break
-			default:
-				throw new Error('Cannot add block, type not configured')
-		}
-
+		const newBlock = BlockEditorFactory.CreateBlockBaseData(newBlockType)
 		const newBlocks = [...state.postBlocks, newBlock]
 		setState({ ...state, postBlocks: newBlocks })
 	}
@@ -184,10 +164,10 @@ export function PostContentEditDialog(props: Props)
 							<Select
 								label="Add Block"
 								value={newBlockType}
-								onChange={(e) => setNewBlockType(e.target.value as BlockEditors.BlockTypes)}
+								onChange={(e) => setNewBlockType(e.target.value as PostBlockTypes)}
 							>
-								{BlockEditors.BlockTypesArray.map((blockType) => (
-									<MenuItem key={blockType} value={blockType}>{blockType.replace(/([A-Z][a-z])/g, ' $1').trim()}</MenuItem>
+								{PostBlockTypesArray.map((blockType) => (
+									<MenuItem key={blockType} value={blockType}>{camelCaseToWords(blockType)}</MenuItem>
 								))}
 							</Select>
 						</FormControl>
@@ -203,11 +183,8 @@ export function PostContentEditDialog(props: Props)
 					{blockCount > 0 && (
 						state.postBlocks.map((blockItem) => (
 							<Stack key={blockItem.id} direction="column" gap={0.5}>
-								<Box flexGrow={1}>
-									{BlockEditors.CreateEditorElement({ data: { ...blockItem }, onDataChange: (e) => onBlockEditHandler(blockItem.id, e) }, blockItem.type)}
-								</Box>
-								<Box display="flex">
-									<Box flexGrow={1}></Box>
+								<Box display="flex" alignItems='center' borderBottom={1} color={'grey.400'}>
+									<Typography flexGrow={1}>{camelCaseToWords(blockItem.type)}</Typography>
 									<SortingControls
 										onMoveTop={() => onMoveBlockHandler(blockItem.id, 'top')}
 										onMoveUp={() => onMoveBlockHandler(blockItem.id, 'up')}
@@ -220,6 +197,9 @@ export function PostContentEditDialog(props: Props)
 										canMoveBottom={checkBlockCanMove(blockItem.id, 'bottom')}
 										size="small"
 									/>
+								</Box>
+								<Box flexGrow={1}>
+									{BlockEditorFactory.CreateEditorElement({ data: { ...blockItem }, onDataChange: (e) => onBlockEditHandler(blockItem.id, e) }, blockItem.type)}
 								</Box>
 							</Stack>
 						))

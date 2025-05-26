@@ -1,7 +1,7 @@
 'use client'
 
 import { AspectRatioBox } from '@/components/AspectRatioBox'
-import { Box, Skeleton } from '@mui/material'
+import { Box, Skeleton, SxProps } from '@mui/material'
 import { CSSProperties, createRef, useEffect, useState } from 'react'
 
 type ImageBoxProps = {
@@ -28,7 +28,7 @@ export function ImageBox(props: ImageBoxProps)
 		display: loading ? 'none' : 'block',
 	}
 
-	const boxStyle: CSSProperties = {
+	const boxStyle: SxProps = {
 		backgroundColor: backgroundColor,
 		background: backgroundImageFill && !loading ? `url(${src}) center/cover` : undefined,
 		borderRadius: borderRadius,
