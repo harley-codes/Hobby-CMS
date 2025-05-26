@@ -346,7 +346,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				meta: {},
 				tags: [],
 				status: 'DISABLED',
-				blocks: {},
+				blocks: [],
 				projects: {
 					connect: projectIds.map(id => ({ id }))
 				}
