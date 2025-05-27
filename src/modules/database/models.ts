@@ -35,7 +35,6 @@ export type PostBlockList = PostBlockListItem[]
 export type PostBlockListItem = {
 	id: string
 	type: string
-	content: string
 	meta: Record<string, string>
 } & Record<string, any>
 

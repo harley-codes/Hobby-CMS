@@ -34,29 +34,26 @@ export namespace BlockEditorFactory
 	export function CreateBlockBaseData(newBlockType: PostBlockTypes): PostBlockListItem
 	{
 		console.log('Creating new block of type:', newBlockType)
-		const newBlock = {} as PostBlockListItem
-		const newId = CreateUID()
+
+		const newBlock = {
+			id: CreateUID(),
+			type: newBlockType,
+			meta: {},
+		} as PostBlockListItem
+
 		switch (newBlockType)
 		{
 			case PostBlockTypes.RichText:
-				newBlock.id = newId
-				newBlock.type = PostBlockTypes.RichText
 				newBlock.content = ''
 				break
 			case PostBlockTypes.HeaderText:
-				newBlock.id = newId
-				newBlock.type = PostBlockTypes.HeaderText
 				newBlock.content = ''
 				newBlock.format = 'h4'
 				break
 			case PostBlockTypes.BodyText:
-				newBlock.id = newId
-				newBlock.type = PostBlockTypes.BodyText
 				newBlock.content = ''
 				break
 			case PostBlockTypes.Images:
-				newBlock.id = newId
-				newBlock.type = PostBlockTypes.Images
 				newBlock.images = []
 				newBlock.display = 'single'
 				break
