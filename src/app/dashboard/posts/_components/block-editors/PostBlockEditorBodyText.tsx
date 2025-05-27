@@ -5,6 +5,7 @@ export function PostBlockEditorBodyText({ data, onDataChange }: PostBlockEditorB
 {
 	return (
 		<TextField
+			margin='dense'
 			value={data.content ?? ''}
 			onChange={(e) => onDataChange({ ...data, content: e.target.value })}
 			multiline

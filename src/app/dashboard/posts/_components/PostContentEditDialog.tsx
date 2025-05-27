@@ -7,7 +7,7 @@ import { invokeConfirmationModal } from '@/components/ConfirmationModal'
 import { createEvent } from '@/modules/custom-events/createEvent'
 import { PostBlockList, PostBlockListItem } from '@/modules/database/models'
 import { Add as AddIcon } from '@mui/icons-material'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 
 type EventData = {
@@ -90,6 +90,14 @@ export function PostContentEditDialog(props: Props)
 		setState({ ...state, postBlocks: newBlocks })
 	}
 
+	function onBlockAddAtIndexHandler(index: number)
+	{
+		const newBlock = BlockEditorFactory.CreateBlockBaseData(newBlockType)
+		const newBlocks = [...state.postBlocks]
+		newBlocks.splice(index, 0, newBlock)
+		setState({ ...state, postBlocks: newBlocks })
+	}
+
 	function onBlockEditHandler(blockId: string, data: PostBlockListItem)
 	{
 		const newBlocks = state.postBlocks.map((block) => block.id === blockId ? data : block)
@@ -155,48 +163,68 @@ export function PostContentEditDialog(props: Props)
 			fullWidth maxWidth="lg"
 			disableEnforceFocus
 		>
-			<DialogTitle>Post Content - {state.postName}</DialogTitle>
+			<DialogTitle boxShadow={1} sx={{ zIndex: 4 }}>
+				<Typography variant='inherit'>
+					Post Content - {state.postName}
+				</Typography>
+				<Stack spacing={2} direction="row" paddingTop={2}>
+					<FormControl fullWidth size="small">
+						<InputLabel>Add Block</InputLabel>
+						<Select
+							label="Add Block"
+							value={newBlockType}
+							onChange={(e) => setNewBlockType(e.target.value as PostBlockTypes)}
+						>
+							{PostBlockTypesArray.map((blockType) => (
+								<MenuItem key={blockType} value={blockType}>{camelCaseToWords(blockType)}</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<Button variant="outlined" endIcon={<AddIcon />} size='small' onClick={onBlockAddHandler} sx={{ paddingLeft: 2 }}>
+						Add
+					</Button>
+				</Stack>
+			</DialogTitle>
 			<DialogContent>
-				<Stack spacing={5}>
-					<Stack spacing={2} direction="row" paddingTop={1}>
-						<FormControl fullWidth size="small">
-							<InputLabel>Add Block</InputLabel>
-							<Select
-								label="Add Block"
-								value={newBlockType}
-								onChange={(e) => setNewBlockType(e.target.value as PostBlockTypes)}
-							>
-								{PostBlockTypesArray.map((blockType) => (
-									<MenuItem key={blockType} value={blockType}>{camelCaseToWords(blockType)}</MenuItem>
-								))}
-							</Select>
-						</FormControl>
-						<Button variant="outlined" endIcon={<AddIcon />} size='small' onClick={onBlockAddHandler}>
-							Add
-						</Button>
-					</Stack>
+				<Stack spacing={5} marginTop={2}>
 					{blockCount === 0 && (
 						<Typography variant="body1" color="textSecondary">
 							No blocks have yet been added to this post.
 						</Typography>
 					)}
 					{blockCount > 0 && (
-						state.postBlocks.map((blockItem) => (
-							<Stack key={blockItem.id} direction="column" gap={0.5}>
-								<Box display="flex" alignItems='center' borderBottom={1} color={'grey.400'}>
-									<Typography flexGrow={1}>{camelCaseToWords(blockItem.type)}</Typography>
-									<SortingControls
-										onMoveTop={() => onMoveBlockHandler(blockItem.id, 'top')}
-										onMoveUp={() => onMoveBlockHandler(blockItem.id, 'up')}
-										onDelete={() => onBlockDeleteHandler(blockItem.id)}
-										onMoveDown={() => onMoveBlockHandler(blockItem.id, 'down')}
-										onMoveBottom={() => onMoveBlockHandler(blockItem.id, 'bottom')}
-										canMoveTop={checkBlockCanMove(blockItem.id, 'top')}
-										canMoveUp={checkBlockCanMove(blockItem.id, 'up')}
-										canMoveDown={checkBlockCanMove(blockItem.id, 'down')}
-										canMoveBottom={checkBlockCanMove(blockItem.id, 'bottom')}
-										size="small"
-									/>
+						state.postBlocks.map((blockItem, blockIndex) => (
+							<Stack
+								key={blockItem.id} direction="column" gap={0.5}
+								sx={{ '&:hover .inline-custom-controls': { opacity: 1 } }}
+							>
+								<Box display="flex" alignItems='center' borderBottom={1} paddingBottom={0.5} color={'grey.500'} gap={0.5}>
+									<Typography flexGrow={1}>#{blockIndex + 1} {camelCaseToWords(blockItem.type)}</Typography>
+									<Stack
+										direction='row'
+										className="inline-custom-controls"
+										sx={{
+											transition: 'all 0.2s ease-in-out',
+											opacity: 0
+										}}
+										gap={0.5}
+									>
+										<IconButton onClick={() => onBlockAddAtIndexHandler(blockIndex + 1)} size="small" title="Add Block Below">
+											<AddIcon />
+										</IconButton>
+										<SortingControls
+											onMoveTop={() => onMoveBlockHandler(blockItem.id, 'top')}
+											onMoveUp={() => onMoveBlockHandler(blockItem.id, 'up')}
+											onDelete={() => onBlockDeleteHandler(blockItem.id)}
+											onMoveDown={() => onMoveBlockHandler(blockItem.id, 'down')}
+											onMoveBottom={() => onMoveBlockHandler(blockItem.id, 'bottom')}
+											canMoveTop={checkBlockCanMove(blockItem.id, 'top')}
+											canMoveUp={checkBlockCanMove(blockItem.id, 'up')}
+											canMoveDown={checkBlockCanMove(blockItem.id, 'down')}
+											canMoveBottom={checkBlockCanMove(blockItem.id, 'bottom')}
+											size="small"
+										/>
+									</Stack>
 								</Box>
 								<Box flexGrow={1}>
 									{BlockEditorFactory.CreateEditorElement({ data: { ...blockItem }, onDataChange: (e) => onBlockEditHandler(blockItem.id, e) }, blockItem.type)}
