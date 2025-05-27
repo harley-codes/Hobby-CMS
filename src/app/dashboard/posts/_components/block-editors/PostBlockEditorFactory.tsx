@@ -3,6 +3,7 @@
 import { PostBlockEditorBodyText } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorBodyText'
 import { PostBlockEditorHeaderText } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorHeaderText'
 import { PostBlockEditorImages } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorImages'
+import { PostBlockEditorSpacer } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorSpacer'
 import { PostBlockEditorBaseProps, PostBlockTypes, PostBlockTypesArray } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorTypes'
 import { PostBlockEditorWysiwyg } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorWysiwyg'
 import { PostBlockListItem } from '@/modules/database/models'
@@ -26,6 +27,8 @@ export namespace BlockEditorFactory
 				return <PostBlockEditorBodyText data={componentProps.data} onDataChange={componentProps.onDataChange} />
 			case PostBlockTypes.Images:
 				return <PostBlockEditorImages data={componentProps.data} onDataChange={componentProps.onDataChange} />
+			case PostBlockTypes.Spacer:
+				return <PostBlockEditorSpacer data={componentProps.data} onDataChange={componentProps.onDataChange} />
 			default:
 				return <div>Error: {componentType} has not yet been configured.</div>
 		}
@@ -56,6 +59,9 @@ export namespace BlockEditorFactory
 			case PostBlockTypes.Images:
 				newBlock.images = []
 				newBlock.display = 'single'
+				break
+			case PostBlockTypes.Spacer:
+				newBlock.count = 1
 				break
 			default:
 				throw new Error('Cannot create block, type not configured')

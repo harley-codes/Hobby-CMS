@@ -2,10 +2,11 @@ import { PostBlockListItem } from '@/modules/database/models'
 
 export enum PostBlockTypes
 {
-	RichText = 'RichText',
 	HeaderText = 'HeaderText',
 	BodyText = 'BodyText',
-	Images = 'Images'
+	RichText = 'RichText',
+	Images = 'Images',
+	Spacer = 'Spacer',
 }
 
 export const PostBlockTypesArray: PostBlockTypes[] = [
