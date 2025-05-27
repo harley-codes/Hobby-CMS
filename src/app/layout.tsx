@@ -7,6 +7,7 @@ import '@fontsource/roboto/700.css'
 import { ConfirmationModal } from '@/components/ConfirmationModal'
 import LoadingModal from '@/components/LoadingModal'
 import { MessageAlertModal } from '@/components/MessageAlertModal'
+import { MetaDataEditorModal } from '@/components/MetaDataEditorModal'
 import { NextAuthProvider } from '@/modules/auth/NextAuthProvider'
 import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth/next'
@@ -38,6 +39,7 @@ export default async function RootLayout(props: ChildProps)
 						<ConfirmationModal />
 						<LoadingModal />
 						<MessageAlertModal />
+						<MetaDataEditorModal />
 					</section>
 				</NextAuthProvider>
 			</body>

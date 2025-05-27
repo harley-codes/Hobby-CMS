@@ -4,9 +4,10 @@ import { BlockEditorFactory } from '@/app/dashboard/posts/_components/block-edit
 import { PostBlockTypes, PostBlockTypesArray } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorTypes'
 import { SortingControls } from '@/app/dashboard/posts/_components/SortingControls'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
+import { invokeMetaDataEditorModal } from '@/components/MetaDataEditorModal'
 import { createEvent } from '@/modules/custom-events/createEvent'
 import { PostBlockList, PostBlockListItem } from '@/modules/database/models'
-import { Add as AddIcon } from '@mui/icons-material'
+import { Add as AddIcon, Tag as TagIcon } from '@mui/icons-material'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 
@@ -211,6 +212,15 @@ export function PostContentEditDialog(props: Props)
 									>
 										<IconButton onClick={() => onBlockAddAtIndexHandler(blockIndex + 1)} size="small" title="Add Block Below">
 											<AddIcon />
+										</IconButton>
+										<IconButton
+											onClick={() => invokeMetaDataEditorModal({
+												data: blockItem.meta || {},
+												onComplete: (meta) => onBlockEditHandler(blockItem.id, { ...blockItem, meta }),
+											})}
+											size="small" title="Edit Metadata"
+										>
+											<TagIcon />
 										</IconButton>
 										<SortingControls
 											onMoveTop={() => onMoveBlockHandler(blockItem.id, 'top')}

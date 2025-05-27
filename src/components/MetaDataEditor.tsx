@@ -4,6 +4,7 @@ import { recordToArray } from '@/modules/utility/recordToArray'
 import
 {
 	Add as AddIcon,
+	CloudDownload as CloudDownloadIcon,
 	Css as CssIcon,
 	Delete as DeleteIcon,
 	Facebook as FacebookIcon,
@@ -25,9 +26,14 @@ const knownMetaKeys: Record<string, () => JSX.Element> = {
 	'twitter': () => <TwitterIcon />,
 	'youtube': () => <YoutubeIcon />,
 	'css': () => <CssIcon />,
+	'style': () => <CssIcon />,
+	'sx': () => <CssIcon />,
 	'link': () => <LinkIcon />,
 	'url': () => <LinkIcon />,
-	'web': () => <LanguageIcon />
+	'web': () => <LanguageIcon />,
+	'webhook': () => <LanguageIcon />,
+	'download': () => <CloudDownloadIcon />,
+	'file': () => <CloudDownloadIcon />,
 }
 
 type Props = {
@@ -41,6 +47,16 @@ function MetaIcon({ metaKey }: { metaKey: string })
 	return (knownMetaKeys[metaKey.toLowerCase()] ?? (() => <TagIcon />))()
 }
 
+function allKeysValid(workingSet: {
+	key: string
+	value: string
+}[]): boolean
+{
+	const keys = workingSet.map(item => item.key.toUpperCase())
+	const uniqueKeys = new Set(keys)
+	return keys.length === uniqueKeys.size && !keys.some(key => key === '')
+}
+
 export function MetaDataEditor(props: Props)
 {
 	const { meta, onMetaChange, onDataValidation } = props
@@ -48,6 +64,7 @@ export function MetaDataEditor(props: Props)
 	const [syncedMeta, setSyncedMeta] = useState(meta)
 	const [workingSet, setWorkingSet] = useState(recordToArray(meta))
 	const [newKeyTemp, setNewKeyTemp] = useState('')
+	const [isValid, setIsValid] = useState(true)
 
 	/*
 	 * Sync the working set with the meta data
@@ -58,7 +75,7 @@ export function MetaDataEditor(props: Props)
 	{
 		const isMetaEqualToWorkingSet = JSON.stringify(recordToArray(meta)) === JSON.stringify(workingSet)
 		const isMetaEqualToSyncedMeta = JSON.stringify(meta) === JSON.stringify(syncedMeta)
-		const isValid = allKeysValid()
+		const isValid = allKeysValid(workingSet)
 
 		if (!isMetaEqualToWorkingSet && isMetaEqualToSyncedMeta && isValid)
 		{
@@ -73,25 +90,28 @@ export function MetaDataEditor(props: Props)
 			setSyncedMeta(meta)
 		}
 
-		onDataValidation(isValid)
 		setNewKeyTemp('')
-
-		function allKeysValid(): boolean
-		{
-			const keys = workingSet.map(item => item.key)
-			const uniqueKeys = new Set(keys)
-			return keys.length === uniqueKeys.size && !keys.some(key => key === '')
-		}
 	}, [meta, workingSet, syncedMeta, onMetaChange, onDataValidation])
+
+	useEffect(() =>
+	{
+		const isValidCheck = allKeysValid(workingSet)
+
+		if (isValid !== isValidCheck)
+		{
+			setIsValid(isValidCheck)
+			onDataValidation(isValidCheck)
+		}
+	}, [isValid, onDataValidation, workingSet])
 
 	function isKeyInvalid(key: string)
 	{
-		return key === '' || workingSet.filter(x => x.key == key).length > 1
+		return key === '' || workingSet.filter(x => x.key.toUpperCase() == key.toUpperCase()).length > 1
 	}
 
 	function deleteKeyHandler(index: number)
 	{
-		setWorkingSet(workingSet.filter((item, i) => i !== index))
+		setWorkingSet(workingSet.filter((_, i) => i !== index))
 	}
 
 	function addKeyHandler()
