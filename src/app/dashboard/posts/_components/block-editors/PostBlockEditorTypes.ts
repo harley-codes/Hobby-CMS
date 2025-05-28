@@ -6,6 +6,7 @@ export enum PostBlockTypes
 	BodyText = 'BodyText',
 	RichText = 'RichText',
 	Images = 'Images',
+	OpenGraphLink = 'OpenGraphLink',
 	Spacer = 'Spacer',
 }
 
