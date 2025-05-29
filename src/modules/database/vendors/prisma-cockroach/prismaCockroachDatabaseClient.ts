@@ -298,7 +298,10 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				idProject: {
 					equals: projectId
 				}
-			}
+			},
+			orderBy: {
+				date: 'desc'
+			},
 		})
 
 		return posts.map(x => ({
