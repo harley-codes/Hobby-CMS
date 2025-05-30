@@ -11,19 +11,13 @@ export async function GET(request: NextRequest, { params }: { params: { accessTo
 	const queryParams = {
 		includeBlocks: request.nextUrl.searchParams.get('includeBlocks') === 'true',
 		showHidden: request.nextUrl.searchParams.get('showHidden') === 'true',
+		skip: parseInt(request.nextUrl.searchParams.get('skip') || '0', 10),
+		take: parseInt(request.nextUrl.searchParams.get('take') || process.env.PAGINATION_PAGE_SIZE.toString(), 10)
 	}
 
 	const client = await getDatabaseClientAsync()
 
-	const posts = await client.getPostDetailsPublicAsync(params.accessToken, queryParams.includeBlocks, queryParams.showHidden)
+	const response = await client.getPostsDetailsPublicAsync(params.accessToken, queryParams.includeBlocks, queryParams.showHidden, queryParams.skip, queryParams.take)
 
-	if (posts.length === 0)
-		return RequestResponses.createNotFoundResponse('No posts found for the given access token and/or postId.')
-
-	return new Response(JSON.stringify(posts), {
-		status: 200,
-		headers: {
-			'Content-Type': 'application/json',
-		}
-	})
+	return RequestResponses.createSuccessResponse(response)
 }

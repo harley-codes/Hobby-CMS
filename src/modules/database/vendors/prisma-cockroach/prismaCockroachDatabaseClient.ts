@@ -9,6 +9,7 @@ import
 	PostBlockDetails,
 	PostDetail,
 	PostDetailPublic,
+	PostDetailsPaginatedPublic,
 	ProjectDetail,
 	ProjectDetailPublic,
 	ProjectReferenceDetail
@@ -355,9 +356,9 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}))
 	}
 
-	async getPostDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, postId?: string): Promise<PostDetailPublic[]>
+	async getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean, showHidden: boolean): Promise<PostDetailPublic | null>
 	{
-		const posts = await this.prisma.post.findMany({
+		const post = await this.prisma.post.findUnique({
 			select: {
 				id: true,
 				title: true,
@@ -370,7 +371,50 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				blocks: includeBlocks,
 			},
 			where: {
-				...(postId ? { id: postId } : {}),
+				id: postId,
+				projects: {
+					some: {
+						accessTokens: {
+							some: {
+								token: accessToken
+							}
+						}
+					}
+				},
+				status: {
+					in: showHidden ? ['ACTIVE', 'HIDDEN'] : ['ACTIVE']
+				}
+			}
+		})
+
+		if (!post) return null
+
+		return {
+			...post,
+			meta: this.getPrismaJsonValue(post.meta),
+			date: this.getDateFromBigint(post.date),
+			tags: this.getPrismaJsonValue<string[]>(post.tags),
+			blocks: post.blocks ? this.getPrismaJsonValue<PostBlockList>(post.blocks) : []
+		}
+	}
+
+	async getPostsDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
+	{
+		const sumPromise = this.prisma.post.count()
+
+		const postsPromise = this.prisma.post.findMany({
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				featuredImageURL: true,
+				date: true,
+				meta: true,
+				tags: true,
+				status: true,
+				blocks: includeBlocks,
+			},
+			where: {
 				projects: {
 					some: {
 						accessTokens: {
@@ -387,15 +431,23 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			orderBy: {
 				date: 'desc'
 			},
+			skip,
+			take
 		})
 
-		return posts.map(x => ({
-			...x,
-			meta: this.getPrismaJsonValue(x.meta),
-			date: this.getDateFromBigint(x.date),
-			tags: this.getPrismaJsonValue<string[]>(x.tags),
-			blocks: x.blocks ? this.getPrismaJsonValue<PostBlockList>(x.blocks) : []
-		}))
+		const [sum, posts] = await Promise.all([sumPromise, postsPromise])
+
+		return {
+			totalPosts: sum,
+			request: { skip, take },
+			posts: posts.map(x => ({
+				...x,
+				meta: this.getPrismaJsonValue(x.meta),
+				date: this.getDateFromBigint(x.date),
+				tags: this.getPrismaJsonValue<string[]>(x.tags),
+				blocks: x.blocks ? this.getPrismaJsonValue<PostBlockList>(x.blocks) : []
+			}))
+		}
 	}
 
 	async getPostBlocksAsync(postId: string): Promise<PostBlockDetails>

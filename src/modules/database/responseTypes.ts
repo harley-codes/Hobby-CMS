@@ -50,6 +50,15 @@ export type PostDetail = Pick<PostModel,
 	projects: Pick<ProjectModel, 'id' | 'name' | 'active'>[]
 }
 
+export type PostDetailsPaginatedPublic = {
+	posts: PostDetailPublic[],
+	totalPosts: number
+	request: {
+		skip: number,
+		take: number
+	}
+}
+
 export type PostDetailPublic = Pick<PostModel,
 	'id' |
 	'title' |
