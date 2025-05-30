@@ -1,5 +1,7 @@
 import { AccessTokenModel, FileModel, PostModel, ProjectModel } from '@/modules/database/models'
 
+export type ProjectDetailPublic = Pick<ProjectModel, 'name' | 'description' | 'featuredImageURL' | 'meta'>
+
 export type ProjectDetail = Pick<ProjectModel, 'id' | 'name' | 'active' | 'meta' | 'description' | 'featuredImageURL'> & {
 	accessTokens: Pick<AccessTokenModel, 'id' | 'token'>[]
 }
@@ -47,6 +49,26 @@ export type PostDetail = Pick<PostModel,
 {
 	projects: Pick<ProjectModel, 'id' | 'name' | 'active'>[]
 }
+
+export type PostDetailsPaginatedPublic = {
+	posts: PostDetailPublic[],
+	totalPosts: number
+	request: {
+		skip: number,
+		take: number
+	}
+}
+
+export type PostDetailPublic = Pick<PostModel,
+	'id' |
+	'title' |
+	'description' |
+	'featuredImageURL' |
+	'date' |
+	'meta' |
+	'tags' |
+	'blocks'
+>
 
 export type PostBlockDetails = Pick<PostModel, 'id' | 'blocks'>
 
