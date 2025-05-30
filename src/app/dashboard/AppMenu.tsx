@@ -15,6 +15,7 @@ const navLinks = [
 	{ title: 'Projects', path: '/dashboard/projects' },
 	{ title: 'Posts', path: '/dashboard/posts' },
 	{ title: 'Files', path: '/dashboard/files' },
+	{ title: 'API', path: '/dashboard/api-reference' },
 ]
 
 type MenuButtonProps = { title: string, path?: string, action?: () => void }
@@ -89,6 +90,10 @@ export default function AppMenu()
 								onClick={handleClose}
 							> {link.title}</MenuItem>
 						)}
+						<MenuButton
+							title="Logout"
+							action={signOut}
+						/>
 					</Menu>
 				</Box>
 			</Toolbar>

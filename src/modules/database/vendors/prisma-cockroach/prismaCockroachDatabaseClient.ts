@@ -356,7 +356,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}))
 	}
 
-	async getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean, showHidden: boolean): Promise<PostDetailPublic | null>
+	async getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
 	{
 		const post = await this.prisma.post.findUnique({
 			select: {
@@ -382,7 +382,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 					}
 				},
 				status: {
-					in: showHidden ? ['ACTIVE', 'HIDDEN'] : ['ACTIVE']
+					in: ['ACTIVE', 'HIDDEN']
 				}
 			}
 		})

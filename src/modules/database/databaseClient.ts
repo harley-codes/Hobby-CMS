@@ -38,7 +38,7 @@ export interface DatabaseClient
 
 	// Posts
 	getPostsDetailsAsync(projectId?: string): Promise<PostDetail[]>
-	getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean, showHidden: boolean): Promise<PostDetailPublic | null>
+	getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
 	getPostsDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
 	getPostBlocksAsync(postId: string): Promise<PostBlockDetails>
 	createPostAsync(title: string, projectIds: string[]): Promise<PostDetail>
