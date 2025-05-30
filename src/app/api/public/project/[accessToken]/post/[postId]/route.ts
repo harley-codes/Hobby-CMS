@@ -10,12 +10,11 @@ export async function GET(request: NextRequest, { params }: { params: { accessTo
 
 	const queryParams = {
 		includeBlocks: request.nextUrl.searchParams.get('includeBlocks') === 'true',
-		showHidden: request.nextUrl.searchParams.get('showHidden') === 'true'
 	}
 
 	const client = await getDatabaseClientAsync()
 
-	const post = await client.getPostDetailsPublicAsync(params.accessToken, params.postId, queryParams.includeBlocks, queryParams.showHidden)
+	const post = await client.getPostDetailsPublicAsync(params.accessToken, params.postId, queryParams.includeBlocks)
 
 	if (!post)
 		return RequestResponses.createNotFoundResponse('No posts found for the given access token and/or postId.')
