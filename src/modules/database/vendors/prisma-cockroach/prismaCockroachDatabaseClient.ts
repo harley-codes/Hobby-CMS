@@ -400,7 +400,24 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 
 	async getPostsDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
 	{
-		const sumPromise = this.prisma.post.count()
+		const whereClause: Prisma.PostWhereInput = {
+			projects: {
+				some: {
+					accessTokens: {
+						some: {
+							token: accessToken
+						}
+					}
+				}
+			},
+			status: {
+				in: showHidden ? ['ACTIVE', 'HIDDEN'] : ['ACTIVE']
+			}
+		}
+
+		const sumPromise = this.prisma.post.count({
+			where: whereClause
+		})
 
 		const postsPromise = this.prisma.post.findMany({
 			select: {
@@ -414,20 +431,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				status: true,
 				blocks: includeBlocks,
 			},
-			where: {
-				projects: {
-					some: {
-						accessTokens: {
-							some: {
-								token: accessToken
-							}
-						}
-					}
-				},
-				status: {
-					in: showHidden ? ['ACTIVE', 'HIDDEN'] : ['ACTIVE']
-				}
-			},
+			where: whereClause,
 			orderBy: {
 				date: 'desc'
 			},
