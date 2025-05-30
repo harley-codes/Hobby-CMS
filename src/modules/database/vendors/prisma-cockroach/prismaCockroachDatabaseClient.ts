@@ -1,7 +1,18 @@
 import { DatabaseClient } from '@/modules/database/databaseClient'
 import { PostBlockList } from '@/modules/database/models'
 import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/modules/database/requestTypes'
-import { AccessTokenDetail, DataFileDetails, DataFilesPaginatedResponse, PostBlockDetails, PostDetail, ProjectDetail, ProjectReferenceDetail } from '@/modules/database/responseTypes'
+import
+{
+	AccessTokenDetail,
+	DataFileDetails,
+	DataFilesPaginatedResponse,
+	PostBlockDetails,
+	PostDetail,
+	PostDetailPublic,
+	ProjectDetail,
+	ProjectDetailPublic,
+	ProjectReferenceDetail
+} from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 
@@ -51,6 +62,33 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		})
 
 		return projects.map(x => ({ ...x, meta: this.getPrismaJsonValue(x.meta) }))
+	}
+
+	async getProjectDetailsPublicAsync(accessToken: string): Promise<ProjectDetailPublic | null>
+	{
+		const project = await this.prisma.project.findFirst({
+			where: {
+				active: true,
+				accessTokens: {
+					some: {
+						token: accessToken
+					}
+				}
+			},
+			select: {
+				name: true,
+				description: true,
+				featuredImageURL: true,
+				meta: true
+			}
+		})
+
+		if (!project) return null
+
+		return {
+			...project,
+			meta: this.getPrismaJsonValue(project.meta)
+		}
 	}
 
 	async getProjectListDetailsAsync(): Promise<ProjectReferenceDetail[]>
@@ -314,6 +352,49 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				name: p.name,
 				active: p.active
 			}))
+		}))
+	}
+
+	async getPostDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, postId?: string): Promise<PostDetailPublic[]>
+	{
+		const posts = await this.prisma.post.findMany({
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				featuredImageURL: true,
+				date: true,
+				meta: true,
+				tags: true,
+				status: true,
+				blocks: includeBlocks,
+			},
+			where: {
+				...(postId ? { id: postId } : {}),
+				projects: {
+					some: {
+						accessTokens: {
+							some: {
+								token: accessToken
+							}
+						}
+					}
+				},
+				status: {
+					in: showHidden ? ['ACTIVE', 'HIDDEN'] : ['ACTIVE']
+				}
+			},
+			orderBy: {
+				date: 'desc'
+			},
+		})
+
+		return posts.map(x => ({
+			...x,
+			meta: this.getPrismaJsonValue(x.meta),
+			date: this.getDateFromBigint(x.date),
+			tags: this.getPrismaJsonValue<string[]>(x.tags),
+			blocks: x.blocks ? this.getPrismaJsonValue<PostBlockList>(x.blocks) : []
 		}))
 	}
 
