@@ -13,11 +13,12 @@
 		"db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma"
 	},
 	"dependencies": {
-		"@emotion/react": "^11.11.1",
-		"@emotion/styled": "^11.11.0",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.0",
 		"@fontsource/roboto": "^5.0.8",
 		"@mui/icons-material": "^5.14.13",
-		"@mui/material": "^5.14.14",
+		"@mui/material": "^5.17.1",
+		"@mui/x-charts": "^8.5.0",
 		"@mui/x-date-pickers": "^7.0.0",
 		"@prisma/client": "5.11.0",
 		"@types/luxon": "^3.4.2",
