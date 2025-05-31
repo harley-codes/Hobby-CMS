@@ -3,6 +3,7 @@ import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/mod
 import
 {
 	AccessTokenDetail,
+	DashboardDetails,
 	DataFileDetails,
 	DataFilesPaginatedResponse,
 	PostBlockDetails,
@@ -45,4 +46,7 @@ export interface DatabaseClient
 	deletePostAsync(postId: string): Promise<void>
 	updatePostDetailsAsync(postId: string, values: PostUpdateDetailsValues): Promise<PostDetail>
 	updatePostBlocksAsync(postId: string, values: PostBlockList): Promise<PostBlockDetails>
+
+	// Misc
+	getDashboardDetailsAsync(): Promise<DashboardDetails>
 }

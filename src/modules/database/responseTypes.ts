@@ -82,3 +82,16 @@ export type PostUpdate = Pick<PostModel,
 	'tags' |
 	'status'
 >
+
+export type DashboardDetails = {
+	counts: {
+		projectsCountTotal: number,
+		postsCountTotal: number,
+		postsCountActive: number,
+		postsCountHidden: number,
+		postsCountDisabled: number,
+		dataFilesCountTotal: number,
+		dataFilesCountWithThumbnail: number,
+	}
+	postDatesUnix: bigint[],
+}

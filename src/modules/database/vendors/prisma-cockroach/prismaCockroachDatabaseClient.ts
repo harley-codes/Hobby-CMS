@@ -4,6 +4,7 @@ import { NewDataFile, PostUpdateDetailsValues, ProjectUpdateValues } from '@/mod
 import
 {
 	AccessTokenDetail,
+	DashboardDetails,
 	DataFileDetails,
 	DataFilesPaginatedResponse,
 	PostBlockDetails,
@@ -584,6 +585,78 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	private getPrismaJsonValue<T>(jsonValue: Prisma.JsonValue)
 	{
 		return (jsonValue?.valueOf() ?? {}) as T
+	}
+	// #endregion
+
+	// #region Misc Methods
+	async getDashboardDetailsAsync(): Promise<DashboardDetails>
+	{
+		const twelveMonthsAgo = DateTime.utc().minus({ months: 12 }).toMillis()
+
+		const dateFilter = {
+			date: {
+				gte: twelveMonthsAgo
+			}
+		}
+
+		const projectCountPromise = this.prisma.project.count()
+
+		const postCountPromise = this.prisma.post.groupBy({
+			by: ['status'],
+			_count: {
+				id: true
+			},
+			where: {
+				...dateFilter
+			}
+		})
+
+		const dataFileCountPromise = this.prisma.file.groupBy({
+			by: ['hasThumbnail'],
+			_count: {
+				id: true
+			},
+			where: {
+				...dateFilter
+			}
+		})
+
+		const postDatesPromise = this.prisma.post.findMany({
+			orderBy: {
+				date: 'desc'
+			},
+			select: {
+				date: true,
+			},
+			where: {
+				...dateFilter
+			}
+		})
+
+		const [
+			projectCount,
+			postCount,
+			dataFileCount,
+			postDates
+		] = await Promise.all([
+			projectCountPromise,
+			postCountPromise,
+			dataFileCountPromise,
+			postDatesPromise
+		])
+
+		return {
+			counts: {
+				projectsCountTotal: projectCount,
+				postsCountTotal: postCount.reduce((sum, x) => sum + x._count.id, 0),
+				postsCountActive: postCount.find(x => x.status === 'ACTIVE')?._count.id ?? 0,
+				postsCountHidden: postCount.find(x => x.status === 'HIDDEN')?._count.id ?? 0,
+				postsCountDisabled: postCount.find(x => x.status === 'DISABLED')?._count.id ?? 0,
+				dataFilesCountTotal: dataFileCount.reduce((sum, x) => sum + x._count.id, 0),
+				dataFilesCountWithThumbnail: dataFileCount.find(x => x.hasThumbnail === true)?._count.id ?? 0,
+			},
+			postDatesUnix: postDates.map(x => x.date)
+		}
 	}
 	// #endregion
 }
