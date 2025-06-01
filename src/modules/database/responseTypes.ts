@@ -3,7 +3,7 @@ import { AccessTokenModel, FileModel, PostModel, ProjectModel } from '@/modules/
 export type ProjectDetailPublic = Pick<ProjectModel, 'name' | 'description' | 'featuredImageURL' | 'meta'>
 
 export type ProjectDetail = Pick<ProjectModel, 'id' | 'name' | 'active' | 'meta' | 'description' | 'featuredImageURL'> & {
-	accessTokens: Pick<AccessTokenModel, 'id' | 'token'>[]
+	accessTokens: Pick<AccessTokenModel, 'id' | 'token' | 'allowedHost'>[]
 }
 
 export type ProjectReferenceDetail = Pick<ProjectModel, 'id' | 'name' | 'active'>
@@ -11,6 +11,7 @@ export type ProjectReferenceDetail = Pick<ProjectModel, 'id' | 'name' | 'active'
 export type AccessTokenDetail = Pick<AccessTokenModel,
 	'id' |
 	'token' |
+	'allowedHost' |
 	'idProject'
 >
 

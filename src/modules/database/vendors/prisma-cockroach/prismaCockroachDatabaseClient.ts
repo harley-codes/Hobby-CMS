@@ -27,7 +27,8 @@ const projectDetailSelect = {
 	accessTokens: {
 		select: {
 			id: true,
-			token: true
+			token: true,
+			allowedHost: true,
 		}
 	},
 	description: true,
@@ -66,14 +67,18 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		return projects.map(x => ({ ...x, meta: this.getPrismaJsonValue(x.meta) }))
 	}
 
-	async getProjectDetailsPublicAsync(accessToken: string): Promise<ProjectDetailPublic | null>
+	async getProjectDetailsPublicAsync(accessToken: string, hostAddress: string): Promise<ProjectDetailPublic | null>
 	{
 		const project = await this.prisma.project.findFirst({
 			where: {
 				active: true,
 				accessTokens: {
 					some: {
-						token: accessToken
+						token: accessToken,
+						allowedHost: {
+							in: [hostAddress, ''],
+							mode: 'insensitive'
+						}
 					}
 				}
 			},
@@ -124,9 +129,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				name,
 				active: isActive,
 				meta: {},
-				accessTokens: {
-					create: {}
-				}
+				accessTokens: {}
 			},
 			select: projectDetailSelect
 		})
@@ -160,10 +163,11 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 	// #endregion
 
 	// #region Token Methods
-	async createAccessTokenAsync(projectId: string): Promise<AccessTokenDetail>
+	async createAccessTokenAsync(projectId: string, allowedHost: string): Promise<AccessTokenDetail>
 	{
 		const token = await this.prisma.accessToken.create({
 			data: {
+				allowedHost,
 				project: {
 					connect: {
 						id: projectId
@@ -173,11 +177,12 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 			select: {
 				id: true,
 				token: true,
+				allowedHost: true,
 				idProject: true,
 			}
 		})
 
-		return { ...token, idProject: token.idProject! }
+		return token
 	}
 
 	async deleteAccessTokenAsync(tokenId: string): Promise<void>
@@ -357,7 +362,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}))
 	}
 
-	async getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
+	async getPostDetailsPublicAsync(accessToken: string, hostAddress: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
 	{
 		const post = await this.prisma.post.findUnique({
 			select: {
@@ -377,7 +382,11 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 					some: {
 						accessTokens: {
 							some: {
-								token: accessToken
+								token: accessToken,
+								allowedHost: {
+									in: [hostAddress, ''],
+									mode: 'insensitive'
+								}
 							}
 						}
 					}
@@ -399,14 +408,18 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 		}
 	}
 
-	async getPostsDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
+	async getPostsDetailsPublicAsync(accessToken: string, hostAddress: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
 	{
 		const whereClause: Prisma.PostWhereInput = {
 			projects: {
 				some: {
 					accessTokens: {
 						some: {
-							token: accessToken
+							token: accessToken,
+							allowedHost: {
+								in: [hostAddress, ''],
+								mode: 'insensitive'
+							}
 						}
 					}
 				}

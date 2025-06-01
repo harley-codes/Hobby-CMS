@@ -7,7 +7,7 @@ import
 import { Button, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 
 type Props = {
-	accessTokens: Pick<AccessTokenModel, 'id' | 'token'>[]
+	accessTokens: Pick<AccessTokenModel, 'id' | 'token' | 'allowedHost'>[]
 	createToken: () => void
 	deleteToken: (tokenId: string) => void
 }
@@ -51,6 +51,7 @@ export function TokenList(props: Props)
 											token.token.slice(-4)
 										}
 									</Typography>
+									<Typography>{token.allowedHost.length > 0 ? token.allowedHost : '*'}</Typography>
 									<IconButton
 										size="small" sx={{ visibility: 'hidden' }}
 										onClick={() => navigator.clipboard.writeText(token.token)}
