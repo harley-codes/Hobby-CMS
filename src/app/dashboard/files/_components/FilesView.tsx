@@ -92,7 +92,7 @@ export function FilesView(props: DataFilesPaginatedResponse)
 		<>
 			<Grid container spacing={2} paddingRight={4}>
 				{dataFilesSearches[page].map((file) => (
-					<Grid item key={file.id} xs={6} sm={4} md={3}>
+					<Grid key={file.id} size={{ xs: 6, sm: 4, md: 3 }}>
 						<FileListItem data={file} onClick={() => fileViewHandler(file.id)} />
 					</Grid>
 				))}

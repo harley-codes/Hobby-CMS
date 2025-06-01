@@ -17,7 +17,7 @@ import
 	YouTube as YoutubeIcon
 } from '@mui/icons-material'
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 
 const knownMetaKeys: Record<string, () => JSX.Element> = {
 	'github': () => <GitHubIcon />,

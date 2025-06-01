@@ -86,12 +86,14 @@ export function NewFileDialog(props: Props)
 						label="File Name"
 						fullWidth
 						margin="dense"
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<FileTypeIcon extension={dataFile.extension} />
-								</InputAdornment>
-							),
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<FileTypeIcon extension={dataFile.extension} />
+									</InputAdornment>
+								)
+							}
 						}}
 						value={dataFile?.name}
 						onChange={nameChangeHandler}

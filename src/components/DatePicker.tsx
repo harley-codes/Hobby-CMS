@@ -1,3 +1,6 @@
+'use '
+
+import { useDomLoaded } from '@/modules/utility/useDomLoaded'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -15,6 +18,8 @@ export default function DatePicker(props: Props)
 
 	const date = DateTime.fromJSDate(value)
 
+	const domLoaded = useDomLoaded()
+
 	function onChangeHandler(value: DateTime<true> | DateTime<false> | null)
 	{
 		if (!value || !value.isValid) return
@@ -23,7 +28,9 @@ export default function DatePicker(props: Props)
 
 	return (
 		<LocalizationProvider dateAdapter={AdapterLuxon}>
-			<MuiDatePicker label={label} value={date} onChange={onChangeHandler} />
+			{domLoaded && (
+				<MuiDatePicker label={label} value={date} onChange={onChangeHandler} />
+			)}
 		</LocalizationProvider>
 	)
 }

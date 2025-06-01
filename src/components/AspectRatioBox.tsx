@@ -1,6 +1,7 @@
 'use client'
 
 import { Box, SxProps } from '@mui/material'
+import { JSX } from 'react'
 
 type Props = {
 	children: JSX.Element
