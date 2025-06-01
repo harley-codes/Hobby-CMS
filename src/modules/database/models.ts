@@ -14,6 +14,7 @@ export type AccessTokenModel = {
 	id: string
 	idProject: string
 	token: string
+	allowedHost: string
 	project: ProjectModel | null
 }
 

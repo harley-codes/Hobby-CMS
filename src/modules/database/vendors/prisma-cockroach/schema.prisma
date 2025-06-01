@@ -20,11 +20,12 @@ model Project {
 }
 
 model AccessToken {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    idProject String?  @db.Uuid
-    token     String   @default(dbgenerated("md5(random()::text)")) @db.String()
+    id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    idProject   String  @db.Uuid
+    token       String  @default(dbgenerated("md5(random()::text)")) @db.String()
+    allowedHost String  @db.String()
     // Relational
-    project   Project? @relation(fields: [idProject], references: [id])
+    project     Project @relation(fields: [idProject], references: [id])
 }
 
 model Post {

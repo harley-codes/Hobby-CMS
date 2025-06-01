@@ -3,10 +3,10 @@
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { AccessTokenDetail } from '@/modules/database/responseTypes'
 
-export async function createProjectTokenServerAction(projectId: string): Promise<AccessTokenDetail>
+export async function createProjectTokenServerAction(projectId: string, allowedHost: string): Promise<AccessTokenDetail>
 {
 	const client = await getDatabaseClientAsync()
-	const token = await client.createAccessTokenAsync(projectId)
+	const token = await client.createAccessTokenAsync(projectId, allowedHost)
 	return token
 }
 

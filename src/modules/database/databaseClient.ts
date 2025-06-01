@@ -19,14 +19,14 @@ export interface DatabaseClient
 {
 	// Project
 	getProjectDetailsAsync(): Promise<ProjectDetail[]>
-	getProjectDetailsPublicAsync(accessToken: string): Promise<ProjectDetailPublic | null>
+	getProjectDetailsPublicAsync(accessToken: string, hostAddress: string): Promise<ProjectDetailPublic | null>
 	getProjectListDetailsAsync(): Promise<ProjectReferenceDetail[]>
 	createProjectAsync(name: string, isActive: boolean): Promise<ProjectDetail>
 	deleteProjectAsync(projectId: string): Promise<void>
 	updateProjectAsync(projectId: string, values: ProjectUpdateValues): Promise<ProjectDetail>
 
 	// Token
-	createAccessTokenAsync(projectId: string): Promise<AccessTokenDetail>
+	createAccessTokenAsync(projectId: string, allowedHost: string): Promise<AccessTokenDetail>
 	deleteAccessTokenAsync(tokenId: string): Promise<void>
 
 	// DataFile
@@ -39,8 +39,8 @@ export interface DatabaseClient
 
 	// Posts
 	getPostsDetailsAsync(projectId?: string): Promise<PostDetail[]>
-	getPostDetailsPublicAsync(accessToken: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
-	getPostsDetailsPublicAsync(accessToken: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
+	getPostDetailsPublicAsync(accessToken: string, hostAddress: string, postId: string, includeBlocks: boolean): Promise<PostDetailPublic | null>
+	getPostsDetailsPublicAsync(accessToken: string, hostAddress: string, includeBlocks: boolean, showHidden: boolean, skip: number, take: number): Promise<PostDetailsPaginatedPublic>
 	getPostBlocksAsync(postId: string): Promise<PostBlockDetails>
 	createPostAsync(title: string, projectIds: string[]): Promise<PostDetail>
 	deletePostAsync(postId: string): Promise<void>

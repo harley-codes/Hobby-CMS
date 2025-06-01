@@ -1,3 +1,4 @@
+import { getHostFromRequestHeaders } from '@/app/api/public/getHostFromRequestHeaders'
 import { RequestResponses } from '@/app/api/public/requestResponses'
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { type NextRequest } from 'next/server'
@@ -17,7 +18,14 @@ export async function GET(request: NextRequest, { params }: { params: { accessTo
 
 	const client = await getDatabaseClientAsync()
 
-	const response = await client.getPostsDetailsPublicAsync(params.accessToken, queryParams.includeBlocks, queryParams.showHidden, queryParams.skip, queryParams.take)
+	const response = await client.getPostsDetailsPublicAsync(
+		params.accessToken,
+		getHostFromRequestHeaders(request.headers),
+		queryParams.includeBlocks,
+		queryParams.showHidden,
+		queryParams.skip,
+		queryParams.take
+	)
 
 	return RequestResponses.createSuccessResponse(response)
 }

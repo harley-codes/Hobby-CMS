@@ -14,6 +14,7 @@ import { createProjectServerAction, deleteProjectServerAction, updateProjectServ
 import { CreateProjectDialog } from '@/app/dashboard/projects/_components/CreateProjectDialog'
 import { ProjectListItem } from '@/app/dashboard/projects/_components/ProjectListItem'
 import { invokeConfirmationModal } from '@/components/ConfirmationModal'
+import { invokeInputModal } from '@/components/InputModal'
 import { invokeLoadingModal } from '@/components/LoadingModal'
 import { ProjectUpdateValues } from '@/modules/database/requestTypes'
 import { ProjectDetail } from '@/modules/database/responseTypes'
@@ -139,18 +140,22 @@ export function ProjectsListView(props: { projects: ProjectDetail[] })
 	{
 		if (!activeProject) return
 
-		invokeConfirmationModal({
-			description: 'Are you sure you want to create new token?',
-			onConfirmed: (confirmed) => confirmed && save(),
+		invokeInputModal({
+			title: 'Create New Token',
+			description: 'Set allowed Host Address. Leave empty to allow all hosts.',
+			inputLabel: 'Allowed Host',
+			onConfirmed: async (confirmed, value) => confirmed && await createTokenAction(value),
 		})
 
-		const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Creating Token' })
-
-		const save = async () =>
+		async function createTokenAction(allowedHost: string)
 		{
+			if (!activeProject) return
+
+			const invokeLoading = (display: boolean) => invokeLoadingModal({ display, textOverride: 'Creating Token' })
+
 			invokeLoading(true)
 
-			const newToken = await createProjectTokenServerAction(activeProject.id)
+			const newToken = await createProjectTokenServerAction(activeProject.id, allowedHost)
 
 			const updatedProjectList = projects.map(project =>
 				project.id === activeProject.id

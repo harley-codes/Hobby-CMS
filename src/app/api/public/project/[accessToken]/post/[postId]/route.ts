@@ -1,3 +1,4 @@
+import { getHostFromRequestHeaders } from '@/app/api/public/getHostFromRequestHeaders'
 import { RequestResponses } from '@/app/api/public/requestResponses'
 import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { type NextRequest } from 'next/server'
@@ -14,7 +15,12 @@ export async function GET(request: NextRequest, { params }: { params: { accessTo
 
 	const client = await getDatabaseClientAsync()
 
-	const post = await client.getPostDetailsPublicAsync(params.accessToken, params.postId, queryParams.includeBlocks)
+	const post = await client.getPostDetailsPublicAsync(
+		params.accessToken,
+		getHostFromRequestHeaders(request.headers),
+		params.postId,
+		queryParams.includeBlocks
+	)
 
 	if (!post)
 		return RequestResponses.createNotFoundResponse('No posts found for the given access token and/or postId.')
