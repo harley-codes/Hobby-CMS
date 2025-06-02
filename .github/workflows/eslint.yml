@@ -11,7 +11,7 @@ name: ESLint
 
 on:
   push:
-    branches: ["main", "prod"]
+    branches: ["main"]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: ["main"]
@@ -28,11 +28,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install ESLint
         run: |
-          npm install eslint@8.10.0
-          npm install @microsoft/eslint-formatter-sarif@3.1.0
-          npm install jiti
+          bun install eslint@8.10.0
+          bun install @microsoft/eslint-formatter-sarif@3.1.0
 
       - name: Run ESLint
         run: npx eslint .
