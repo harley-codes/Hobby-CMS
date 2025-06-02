@@ -3,7 +3,7 @@ import { Slider, Stack, Typography } from '@mui/material'
 
 export function PostBlockEditorSpacer({ data, onDataChange }: PostBlockEditorBaseProps)
 {
-	const { count } = data
+	const count = data.count as number | undefined
 
 	return (
 		<Stack direction='row' gap={2} paddingLeft={1} paddingRight={2} paddingTop={1}>

@@ -37,7 +37,7 @@ export type PostBlockListItem = {
 	id: string
 	type: string
 	meta: Record<string, string>
-} & Record<string, any>
+} & Record<string, unknown>
 
 export type PostStatus = 'ACTIVE' | 'DISABLED' | 'HIDDEN'
 

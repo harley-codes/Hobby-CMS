@@ -8,8 +8,8 @@ import { useState } from 'react'
 
 export function PostBlockEditorOpenGraphLink({ data, onDataChange }: PostBlockEditorBaseProps)
 {
-	const url: string | undefined = data.url
-	const content: Record<string, string> = data.content || {}
+	const url = data.url as string | undefined
+	const content = data.content || {} as Record<string, string>
 
 	const [previewData, setPreviewData] = useState(false)
 

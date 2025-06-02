@@ -38,7 +38,7 @@ export function NewFileButton()
 
 		reader.addEventListener('load', async (event) =>
 		{
-			let base64 = event.target?.result as string
+			const base64 = event.target?.result as string
 			if (!base64) return
 
 			const fileDetail = await processFile({

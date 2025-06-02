@@ -9,12 +9,14 @@ const JoditEditor = dynamic(() => import('jodit-react'), {
 
 export function PostBlockEditorWysiwyg({ data, onDataChange }: PostBlockEditorBaseProps)
 {
+	const content = data.content as string | undefined
+
 	const config = useMemo(() => ({
 		readonly: false,
 		placeholder: '',
 		minHeight: 300,
-		defaultFontSizePoints: 'pt' as 'pt',
-		toolbarButtonSize: 'small' as 'small',
+		defaultFontSizePoints: 'pt' as const,
+		toolbarButtonSize: 'small' as const,
 		hidePoweredByJodit: true,
 		disablePlugins: [
 			'video',
@@ -60,7 +62,7 @@ export function PostBlockEditorWysiwyg({ data, onDataChange }: PostBlockEditorBa
 	return (
 		<Box paddingTop={1}>
 			<JoditEditor
-				value={data.content ?? ''}
+				value={content ?? ''}
 				config={config}
 				onChange={(newContent) => onDataChange({ ...data, content: newContent })}
 			/>
