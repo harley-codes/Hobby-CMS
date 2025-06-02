@@ -82,7 +82,7 @@ export function PostListItem(props: Props)
 						label="Post Name"
 						value={post.title}
 						onChange={(e) => updateDetail({ title: e.currentTarget.value })}
-						inputProps={{ maxLength: 250 }}
+						slotProps={{ htmlInput: { maxLength: 250 } }}
 					/>
 
 					<Stack direction="row" spacing={2}>
@@ -140,21 +140,21 @@ export function PostListItem(props: Props)
 
 					<Box>
 						<Grid container spacing={2}>
-							<Grid item xs={12} md={6}>
+							<Grid size={{ xs: 12, md: 6 }}>
 								<Stack spacing={2}>
 									<TextField
 										label="Post Description"
 										value={post.description ?? ''}
 										onChange={(e) => updateDetail({ description: e.currentTarget.value })}
 										multiline
-										inputProps={{ maxLength: 500 }}
+										slotProps={{ htmlInput: { maxLength: 500 } }}
 										minRows={8}
 										ref={descriptionRef}
 
 									/>
 								</Stack>
 							</Grid>
-							<Grid item xs={12} md={6}>
+							<Grid size={{ xs: 12, md: 6 }}>
 								<FeaturedImageInput
 									featuredImageURL={post.featuredImageURL ?? ''}
 									onChange={(value) => updateDetail({ featuredImageURL: value })}

@@ -8,6 +8,7 @@ import { PostBlockEditorSpacer } from '@/app/dashboard/posts/_components/block-e
 import { PostBlockEditorBaseProps, PostBlockTypes, PostBlockTypesArray } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorTypes'
 import { PostBlockEditorWysiwyg } from '@/app/dashboard/posts/_components/block-editors/PostBlockEditorWysiwyg'
 import { PostBlockListItem } from '@/modules/database/models'
+import type { JSX } from 'react'
 import { v4 as CreateUID } from 'uuid'
 
 export namespace BlockEditorFactory

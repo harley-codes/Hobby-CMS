@@ -76,20 +76,20 @@ export function ProjectListItem(props: Props)
 
 					<Box>
 						<Grid container spacing={2}>
-							<Grid item xs={12} md={6}>
+							<Grid size={{ xs: 12, md: 6 }}>
 								<Stack spacing={2}>
 									<TextField
 										label="Project Description"
 										value={project.description ?? ''}
 										onChange={(e) => updateDetail({ description: e.currentTarget.value })}
 										multiline
-										inputProps={{ maxLength: 500 }}
+										slotProps={{ htmlInput: { maxLength: 500 } }}
 										minRows={8}
 										ref={descriptionRef}
 									/>
 								</Stack>
 							</Grid>
-							<Grid item xs={12} md={6}>
+							<Grid size={{ xs: 12, md: 6 }}>
 								<FeaturedImageInput
 									featuredImageURL={project.featuredImageURL ?? ''}
 									onChange={(value) => updateDetail({ featuredImageURL: value })}

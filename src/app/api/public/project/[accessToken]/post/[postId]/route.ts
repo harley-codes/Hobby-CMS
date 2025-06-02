@@ -4,9 +4,14 @@ import { getDatabaseClientAsync } from '@/modules/database/databaseFactory'
 import { type NextRequest } from 'next/server'
 
 
-export async function GET(request: NextRequest, { params }: { params: { accessToken: string, postId: string } })
+export async function GET(
+	request: NextRequest,
+	{ params }: { params: Promise<{ accessToken: string; postId: string }> }
+)
 {
-	if (!params.accessToken)
+	const { accessToken, postId } = await params
+
+	if (!accessToken)
 		return RequestResponses.createUnauthorizedResponse('Access token is required to access this resource.')
 
 	const queryParams = {
@@ -16,9 +21,9 @@ export async function GET(request: NextRequest, { params }: { params: { accessTo
 	const client = await getDatabaseClientAsync()
 
 	const post = await client.getPostDetailsPublicAsync(
-		params.accessToken,
+		accessToken,
 		getHostFromRequestHeaders(request.headers),
-		params.postId,
+		postId,
 		queryParams.includeBlocks
 	)
 

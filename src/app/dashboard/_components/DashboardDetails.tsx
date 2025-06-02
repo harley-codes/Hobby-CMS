@@ -1,6 +1,6 @@
 'use client'
 
-import { DashboardDetails } from '@/modules/database/responseTypes'
+import type { DashboardDetails } from '@/modules/database/responseTypes'
 import { Card, CardContent, CardHeader, Grid, Stack } from '@mui/material'
 import { LineChart, PieChart } from '@mui/x-charts'
 
@@ -61,7 +61,7 @@ export function DashboardDetails(props: DashboardDetails)
 			</Card>
 
 			<Grid container spacing={2}>
-				<Grid item xs={12} md={6}>
+				<Grid size={{ xs: 12, md: 6 }}>
 					<Card>
 						<CardHeader
 							title="File Breakdown"
@@ -92,7 +92,7 @@ export function DashboardDetails(props: DashboardDetails)
 					</Card>
 				</Grid>
 
-				<Grid item xs={12} md={6}>
+				<Grid size={{ xs: 12, md: 6 }}>
 					<Card>
 						<CardHeader
 							title="Post Breakdown"

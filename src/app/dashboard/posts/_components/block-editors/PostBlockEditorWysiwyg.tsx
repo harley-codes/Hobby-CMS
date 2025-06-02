@@ -13,7 +13,7 @@ export function PostBlockEditorWysiwyg({ data, onDataChange }: PostBlockEditorBa
 		readonly: false,
 		placeholder: '',
 		minHeight: 300,
-		defaultFontSizePoints: 'pt',
+		defaultFontSizePoints: 'pt' as 'pt',
 		toolbarButtonSize: 'small' as 'small',
 		hidePoweredByJodit: true,
 		disablePlugins: [
