@@ -35,7 +35,7 @@ jobs:
         run: |
           bun install eslint@9.28.0
           bun install @eslint/eslintrc@3.3.1
-          bun install eslint-config-next@16.3.3
+          bun install eslint-config-next@15.3.3
           bun install jiti@2.4.2
           bun install @microsoft/eslint-formatter-sarif@3.1.0
 
