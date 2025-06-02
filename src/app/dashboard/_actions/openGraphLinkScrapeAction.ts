@@ -19,7 +19,7 @@ export async function fetchOpenGraphDataViaRegex(url: string): Promise<Record<st
 
 		return ogData
 	}
-	catch (err)
+	catch
 	{
 		return false
 	}

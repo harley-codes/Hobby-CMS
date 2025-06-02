@@ -16,7 +16,8 @@ export const nextAuthOptions: NextAuthOptions = {
 		secret: process.env.NEXTAUTH_SECRET,
 	},
 	callbacks: {
-		async signIn({ user, account, profile, email, credentials })
+		// async signIn({ user, account, profile, email, credentials })
+		async signIn({ user })
 		{
 			const users = process.env.NEXTAUTH_PROVIDER_GITHUB_ADMIN_USER_IDs.split('|')
 			return users.includes(user.id)
