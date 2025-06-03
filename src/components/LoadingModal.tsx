@@ -15,7 +15,7 @@ const loadingEvent = createEvent<LoadingEvent>('loadingEvent')
 
 export const invokeLoadingModal = loadingEvent.callEvent
 
-export default function LoadingModal()
+export function LoadingModal()
 {
 	const [state, setState] = useState<LoadingEvent>({
 		display: false,
