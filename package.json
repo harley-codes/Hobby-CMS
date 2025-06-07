@@ -9,6 +9,8 @@
 		"start": "next start",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
+		"build:prisma-cockroach": "bun run db:prisma-cockroach:generate && bun run build",
+		"build:prisma-postgres": "bun run db:prisma-postgres:generate && bun run build",
 		"db:prisma-cockroach:generate": "prisma generate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
 		"db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
 		"db:prisma-cockroach:push": "prisma db push --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
