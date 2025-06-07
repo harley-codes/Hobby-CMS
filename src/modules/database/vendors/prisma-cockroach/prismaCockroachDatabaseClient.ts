@@ -16,6 +16,7 @@ import
 	ProjectReferenceDetail
 } from '@/modules/database/responseTypes'
 import { Prisma, PrismaClient } from '@prisma/client'
+import { InputJsonArray } from '@prisma/client/runtime/library'
 import { DateTime } from 'luxon'
 
 // #region Selectors
@@ -568,7 +569,7 @@ export class PrismaCockroachDatabaseClient implements DatabaseClient
 				id: postId
 			},
 			data: {
-				blocks: values
+				blocks: values as InputJsonArray
 			},
 			select: {
 				id: true,
