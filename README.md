@@ -12,14 +12,14 @@ Hobby-Page is a complementing front-end that is still in development, a link wil
 
 - Frontend Framework - React [NextJS](https://nextjs.org/)
 - Package manager - [Bun](https://bun.sh/)
-- Database Framework - [Prisma](https://www.prisma.io/) with [CockroachDB](https://www.cockroachlabs.com).
+- Database Frameworks
+  - [Prisma](https://www.prisma.io/) with [CockroachDB](https://www.cockroachlabs.com).
+  - [Prisma](https://www.prisma.io/) with [PostgresSQL](https://www.postgresql.org/).
 - Authentication - [NextAuth](https://next-auth.js.org/) via Github login.
-
-At the time of writing this, there is only one database option, though code has been modelled to future proof for additional integration options; which will be listed on the roadmap below.
 
 ## Build and Run
 
-Instructions are given for local build, however deployment to services such as Vercel should work out of the box. If not, please submit an [issue](https://github.com/harley-codes/Hobby-CMS/issues).
+These instructions are given for local build, however deployment to services such as Vercel should work out of the box. If not, please submit an [issue](https://github.com/harley-codes/Hobby-CMS/issues).
 
 There is a [.env.template](/.env.template) file you can copy that lists out all the required environment variables that are used. **Note:** the prisma commands won't pick up on a _.env.local_ files anymore. Use _.env_ in your local development, or configure the respective environment variables elsewhere.
 
@@ -27,16 +27,20 @@ Authentication is basic yet secure, a github user id is nominated in the environ
 
 ```bash
 bun install
-bun db:prisma-cockroach:generate
+
+# Provider=prisma-cockroach, prisma-postgres
+bun db:{provider}:generate
+bun db:{provider}:push
+
 bun dev
 ```
 
 ## Roadmap
 
-- [ ] v1.0.0 release 🥳
+- [x] v1.0.0 release 🥳
 - [ ] Add additional analytic data to dashboard including logs.
 - [ ] Add telemetry to track who is visiting the Public API.
-- [ ] Add Postgres DB support.
+- [x] Add Postgres DB support.
 - [ ] Add bi-directional migration support for moving between DB providers.
 
 ##

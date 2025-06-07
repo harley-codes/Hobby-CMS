@@ -1,0 +1,63 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_PRISMA_POSTGRES_DATABASE_URL")
+}
+
+model Project {
+    id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name             String        @db.Text()
+    description      String?       @db.Text()
+    featuredImageURL String?       @db.Text()
+    active           Boolean       @db.Boolean
+    meta             Json          @db.JsonB
+    // Relational
+    posts            Post[]
+    accessTokens     AccessToken[]
+}
+
+model AccessToken {
+    id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    idProject   String  @db.Uuid
+    token       String  @default(dbgenerated("md5(random()::text)")) @db.Text()
+    allowedHost String  @db.Text()
+    // Relational
+    project     Project @relation(fields: [idProject], references: [id])
+}
+
+model Post {
+    id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    idProject        String?    @db.Uuid
+    title            String     @db.Text()
+    description      String?    @db.Text()
+    featuredImageURL String?    @db.Text()
+    date             BigInt     @db.BigInt
+    blocks           Json       @db.JsonB
+    meta             Json       @db.JsonB
+    tags             Json       @db.JsonB
+    status           PostStatus
+    // Relational
+    projects         Project[]
+}
+
+enum PostStatus {
+    ACTIVE
+    DISABLED
+    HIDDEN
+}
+
+model File {
+    id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name         String  @db.Text()
+    mimeType     String  @db.Text()
+    extension    String  @db.Text()
+    date         BigInt  @db.BigInt
+    sizeKb       Int     @db.Integer
+    meta         Json    @db.JsonB
+    data64       String  @db.Text()
+    hasThumbnail Boolean @db.Boolean
+    thumbnail64  String? @db.Text()
+}

@@ -10,7 +10,11 @@
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
 		"db:prisma-cockroach:generate": "prisma generate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
-		"db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma"
+		"db:prisma-cockroach:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
+		"db:prisma-cockroach:push": "prisma db push --schema=src/modules/database/vendors/prisma-cockroach/schema.prisma",
+		"db:prisma-postgres:generate": "prisma generate --schema=src/modules/database/vendors/prisma-postgres/schema.prisma",
+		"db:prisma-postgres:migrate": "prisma migrate dev --name migrate --schema=src/modules/database/vendors/prisma-postgres/schema.prisma",
+		"db:prisma-postgres:push": "prisma db push --schema=src/modules/database/vendors/prisma-postgres/schema.prisma"
 	},
 	"dependencies": {
 		"@emotion/cache": "^11.14.0",
